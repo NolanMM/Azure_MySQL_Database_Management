@@ -1,12 +1,15 @@
+using Cloud_Database_Management_System.Controllers;
+using System;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-//builder.Services.AddControllers().AddNewtonsoftJson();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register the IGroupService and its implementation here
+builder.Services.AddScoped<IGroupService>(sp => new GroupService(DateTime.Now));
 
 var app = builder.Build();
 
@@ -18,9 +21,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
