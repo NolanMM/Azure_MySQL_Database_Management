@@ -1,6 +1,7 @@
 ﻿using Cloud_Database_Management_System.Data;
 using Cloud_Database_Management_System.Models.Dto;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace Cloud_Database_Management_System.Controllers
 {
@@ -15,27 +16,44 @@ namespace Cloud_Database_Management_System.Controllers
             return Ok(DatabaseStore.DatabaseList);
         }
 
-        [HttpGet("{id:int}", Name = "GetDatabase")]
+        [HttpGet("{Name_Identify}/{id:int}", Name = "GetDatabase")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
-        // Customs response codes so no need to put type in the ActionResult<DatabaseDTO> just return ActionResult
-        //[ProducesResponseType(200, Type = typeof(DatabaseDTO))]
-        //[ProducesResponseType(400)]
-        //[ProducesResponseType(404)]
-        public ActionResult<DatabaseDTO> GetDatabases(int id)
+        public ActionResult<DatabaseDTO> GetDatabases(string Name_Identify, [FromBody] object dataObject, int id)
         {
-            if(id == 0)
+            if (id == 0)
             {
                 return BadRequest();
             }
-            var database = DatabaseStore.DatabaseList.FirstOrDefault(u => u.DatabaseId == id);
-            if(database == null)
+
+            Dictionary<string, Type> dataClassMap = new Dictionary<string, Type>
+            {
+                { "Group1", typeof(Group1DataClass) },
+                { "Group2", typeof(Group2DataClass) },
+                { "Group3", typeof(Group3DataClass) },
+                { "Group4", typeof(Group4DataClass) },
+                { "Group5", typeof(Group5DataClass) },
+                { "Group6", typeof(Group6DataClass) }
+            };
+
+            if (dataClassMap.TryGetValue(Name_Identify, out Type dataClassType))
+            {
+                // Use System.Text.Json to deserialize the dataObject into the corresponding data class
+                try
+                {
+                    var data = JsonSerializer.Deserialize(JsonSerializer.Serialize(dataObject), dataClassType);
+                    return Ok(data);
+                }
+                catch (JsonException)
+                {
+                    return BadRequest();
+                }
+            }
+            else
             {
                 return NotFound();
             }
-            return Ok(database);
         }
 
         // Using [ApiController] Attribute
@@ -107,6 +125,24 @@ namespace Cloud_Database_Management_System.Controllers
                 return NotFound();
             }
             DatabaseStore.DatabaseList.Remove(database);
+            return NoContent();
+        }
+
+        [HttpPut("{id:int}", Name = "UpdateDatabase")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult UpdateVilla(int id, [FromBody]DatabaseDTO database)
+        {
+            if (database == null || id != database.DatabaseId)
+            {
+                return BadRequest(database);
+            }
+            var database_ = DatabaseStore.DatabaseList.FirstOrDefault(u => u.DatabaseId == id);
+            database_.Name = database.Name;
+            database_.DatabaseId = database.DatabaseId;
+            database_.DatabaseVersion = database.DatabaseVersion;
+            database_.DatabaseType = database.DatabaseType;
+
             return NoContent();
         }
 
