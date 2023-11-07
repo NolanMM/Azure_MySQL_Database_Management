@@ -2,25 +2,56 @@
 using Cloud_Database_Management_System.Interfaces.Repositories_Interfaces;
 using Cloud_Database_Management_System.Models.Group_Data_Models;
 using Cloud_Database_Management_System.Repositories;
+using System.Text.Json;
 
 namespace Cloud_Database_Management_System.Services.Group_Data_Services
 {
     public class Group6Service : IGroupService
     {
-        private readonly IGroupRepository _group6Repository;
+        private IGroupRepository _Group6Repository;
+        private Group6_Data_Model _Group6_DataModel;
+        private DateTime _Created;
 
-        public Group6Service(DateTime created)
+        public Group6Service(DateTime created, object data)
         {
-            _group6Repository = new Group6Repository(created);
+            _Group6Repository = new Group6Repository(created);
+            _Created = created;
         }
-        public bool TryProcessData(int groupId, object data, out Group6_Data_Model result)
+
+        public bool ProcessGetRequestDataCorrespondGroupID(object data, string Tablename)
         {
             throw new NotImplementedException();
         }
 
-        public bool TryProcessData(int groupId, object data, out object result)
+        public bool ProcessPostRequestDataCorrespondGroupID(object data, string Tablename)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _Group6_DataModel = ProcessDataForGroup6(data);
+                if (_Group6_DataModel != null)
+                {
+                    _Group6Repository.Create(_Group6_DataModel, _Created, Tablename);
+                    return true;
+                }
+                else { return false; }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        private Group6_Data_Model? ProcessDataForGroup6(object data)
+        {
+            if (data == null) { return null; }
+            try
+            {
+                return JsonSerializer.Deserialize<Group6_Data_Model>(data.ToString());
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
         }
     }
 }

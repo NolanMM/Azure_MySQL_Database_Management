@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Cloud_Database_Management_System.Models.Group_Data_Models
+namespace Cloud_Database_Management_System.Models.Group_Data_Models 
 {
-    public class Group3_Data_Model
+    public class Group3_Data_Model : Group_Data_Model
     {
         public string stock { get; set; }
 

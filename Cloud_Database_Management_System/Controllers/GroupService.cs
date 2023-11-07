@@ -1,21 +1,108 @@
 ﻿using Cloud_Database_Management_System.Models.Group_Data_Models;
 using System.Text.Json;
 using Cloud_Database_Management_System.Interfaces.Database_Services_Interfaces;
+using Cloud_Database_Management_System.Services.Group_Data_Services;
 
 namespace Cloud_Database_Management_System.Controllers
 {
-    public abstract class GroupService : IGroupService
+    public class GroupService
     {
-        private readonly IGroupService groupRepository;
+        private IGroupService groupService;
         private DateTime _created;
         
-        public bool TryProcessData(int groupId, object data, out object result)
+        public GroupService(DateTime created)
         {
-            DateTime create = DateTime.Now;
-            this._created = create;
+            _created = created;
+        }
+
+        public bool ProcessPostData(int groupId, string Tablename, object data)
+        {
+            if (groupId == 0) { return false; }
+            else {
+                switch (groupId)
+                {
+                    case 1:
+                        var Group_1_Services = new Group1Service(_created, data);
+                        if (Group_1_Services == null)
+                        {
+                            return false;
+                        }else
+                        {
+                            groupService = Group_1_Services;
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            return true;
+                        }
+                    case 2:
+                        var Group_2_Services = new Group2Service(_created, data);
+                        if (Group_2_Services == null)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            groupService = Group_2_Services;
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            return true;
+                        }
+                    case 3:
+                        var Group_3_Services = new Group3Service(_created, data);
+                        if (Group_3_Services == null)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            groupService = Group_3_Services;
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            return true;
+                        }
+                    case 4:
+                        var Group_4_Services = new Group4Service(_created, data);
+                        if (Group_4_Services == null)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            groupService = Group_4_Services;
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            return true;
+                        }
+                    case 5:
+                        var Group_5_Services = new Group5Service(_created, data);
+                        if (Group_5_Services == null)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            groupService = Group_5_Services;
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            return true;
+                        }
+                    case 6:
+                        var Group_6_Services = new Group6Service(_created, data);
+                        if (Group_6_Services == null)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            groupService = Group_6_Services;
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            return true;
+                        }
+                    default:
+                        return false;
+                }
+            }
+        }
+        public bool ProcessGetData(int groupId, string Tablename, object data, out object result)
+        {
+            result = null;
+
             if (groupId == 0)
             {
-                result = null;
                 return false;
             }
             else
@@ -23,147 +110,21 @@ namespace Cloud_Database_Management_System.Controllers
                 switch (groupId)
                 {
                     case 1:
-                        result = ProcessDataForGroup1(data);
-                        if(result == null)
-                        {
-                            return false;
-                        }else
-                        {
-                            return true;
-                        }
-                    case 2:
-                        result = ProcessDataForGroup2(data);
-                        if (result == null)
+                        var Group_1_Services = new Group1Service(_created, data);
+                        if (Group_1_Services == null)
                         {
                             return false;
                         }
                         else
                         {
-                            return true;
-                        }
-                    case 3:
-                        result = ProcessDataForGroup3(data);
-                        if (result == null)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    case 4:
-                        result = ProcessDataForGroup4(data);
-                        if (result == null)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    case 5:
-                        result = ProcessDataForGroup5(data);
-                        if (result == null)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    case 6:
-                        result = ProcessDataForGroup6(data);
-                        if (result == null)
-                        {
-                            return false;
-                        }
-                        else
-                        {
+                            groupService = Group_1_Services;
+                            groupService.ProcessGetRequestDataCorrespondGroupID(data, Tablename);
+                            result = groupService; // Set the result to the groupService instance
                             return true;
                         }
                     default:
-                        result = null;
                         return false;
                 }
-            }
-        }
-
-        private Group1_Data_Model? ProcessDataForGroup1(object data)
-        {
-            if(data == null) { return null; }
-            try
-            {
-                return JsonSerializer.Deserialize<Group1_Data_Model>(data.ToString());
-            }
-            catch (JsonException)
-            {
-                return null;
-            }
-        }
-
-        private Group2_Data_Model? ProcessDataForGroup2(object data)
-        {
-            if (data == null) { return null; }
-            try
-            {
-                return JsonSerializer.Deserialize<Group2_Data_Model>(data.ToString());
-            }
-            catch (JsonException)
-            {
-                return null;
-            }
-        }
-
-        private Group3_Data_Model? ProcessDataForGroup3(object data)
-        {
-            if (data == null) { return null; }
-            try
-            {
-                Group3_Data_Model data_return = JsonSerializer.Deserialize<Group3_Data_Model>(data.ToString());
-                return data_return;
-            }
-            catch (JsonException)
-            {
-                return null;
-            }
-        }
-
-        private Group4_Data_Model? ProcessDataForGroup4(object data)
-        {
-            if (data == null) { return null; }
-            try
-            {
-                return JsonSerializer.Deserialize<Group4_Data_Model>(data.ToString());
-            }
-            catch (JsonException)
-            {
-                return null;
-            }
-        }
-
-        private Group5_Data_Model? ProcessDataForGroup5(object data)
-        {
-            if (data == null) { return null; }
-            try
-            {
-                return JsonSerializer.Deserialize<Group5_Data_Model>(data.ToString());
-            }
-            catch (JsonException)
-            {
-                return null;
-            }
-        }
-
-        private Group6_Data_Model? ProcessDataForGroup6(object data)
-        {
-            if (data == null) { return null; }
-            try
-            {
-                return JsonSerializer.Deserialize<Group6_Data_Model>(data.ToString());
-            }
-            catch (JsonException)
-            {
-                return null;
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Cloud_Database_Management_System.Interfaces.Repositories_Interfaces;
+using Cloud_Database_Management_System.Models.Group_Data_Models;
 
 namespace Cloud_Database_Management_System.Repositories
 {
@@ -8,11 +9,6 @@ namespace Cloud_Database_Management_System.Repositories
         public Group4Repository(DateTime created)
         {
             _created = created;
-        }
-
-        public bool Create()
-        {
-            throw new NotImplementedException();
         }
 
         public bool Delete()
@@ -31,6 +27,16 @@ namespace Cloud_Database_Management_System.Repositories
         }
 
         public bool Update()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> IGroupRepository.Create(Group_Data_Model group_Data_Model, DateTime _Created)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<Group_Data_Model>> IGroupRepository.Read()
         {
             throw new NotImplementedException();
         }

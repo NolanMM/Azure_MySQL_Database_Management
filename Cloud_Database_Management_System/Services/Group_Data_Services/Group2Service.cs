@@ -2,25 +2,55 @@
 using Cloud_Database_Management_System.Interfaces.Repositories_Interfaces;
 using Cloud_Database_Management_System.Models.Group_Data_Models;
 using Cloud_Database_Management_System.Repositories;
+using System.Text.Json;
 
 namespace Cloud_Database_Management_System.Services.Group_Data_Services
 {
     public class Group2Service : IGroupService
     {
-        private readonly IGroupRepository _group2Repository;
+        private IGroupRepository _Group2Repository;
+        private Group2_Data_Model _Group2_DataModel;
+        private DateTime _Created;
 
-        public Group2Service(DateTime created)
+        public Group2Service(DateTime created, object data)
         {
-            _group2Repository = new Group2Repository(created);
+            _Group2Repository = new Group2Repository(created);
+            _Created = created;
         }
-        public bool TryProcessData(int groupId, object data, out Group2_Data_Model result)
+        public bool ProcessGetRequestDataCorrespondGroupID(object data, string Tablename)
         {
             throw new NotImplementedException();
         }
 
-        public bool TryProcessData(int groupId, object data, out object result)
+        public bool ProcessPostRequestDataCorrespondGroupID(object data, string Tablename)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _Group2_DataModel = ProcessDataForGroup2(data);
+                if (_Group2_DataModel != null)
+                {
+                    _Group2Repository.Create(_Group2_DataModel, _Created, Tablename);
+                    return true;
+                }
+                else { return false; }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        private Group2_Data_Model? ProcessDataForGroup2(object data)
+        {
+            if (data == null) { return null; }
+            try
+            {
+                return JsonSerializer.Deserialize<Group2_Data_Model>(data.ToString());
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
         }
     }
 }

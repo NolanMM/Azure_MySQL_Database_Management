@@ -9,7 +9,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register the IGroupService and its implementation here
-builder.Services.AddScoped<IGroupService>(sp => new GroupService(DateTime.Now));
+builder.Services.AddScoped<GroupService>(sp => new GroupService(DateTime.Now));
 
 var app = builder.Build();
 
