@@ -1,11 +1,12 @@
 ﻿using Cloud_Database_Management_System.Models.Group_Data_Models;
+using Cloud_Database_Management_System.Repositories.Repositories_Interfaces;
 using System.Text.Json;
 
 namespace Cloud_Database_Management_System.Controllers
 {
     public class GroupService : IGroupService
     {
-        private readonly IGroupService _groupService;
+        private readonly IGroupService groupRepository;
         private DateTime _created;
         public GroupService(DateTime created)
         {
@@ -120,7 +121,8 @@ namespace Cloud_Database_Management_System.Controllers
             if (data == null) { return null; }
             try
             {
-                return JsonSerializer.Deserialize<Group3_Data_Model>(data.ToString());
+                Group3_Data_Model data_return = JsonSerializer.Deserialize<Group3_Data_Model>(data.ToString());
+                return data_return;
             }
             catch (JsonException)
             {
