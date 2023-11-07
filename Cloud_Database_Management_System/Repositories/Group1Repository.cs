@@ -1,5 +1,4 @@
-﻿using Cloud_Database_Management_System.Models.Group_Data_Models;
-using Cloud_Database_Management_System.Repositories.Repositories_Interfaces;
+﻿using Cloud_Database_Management_System.Interfaces.Repositories_Interfaces;
 
 namespace Cloud_Database_Management_System.Repositories
 {
@@ -10,18 +9,19 @@ namespace Cloud_Database_Management_System.Repositories
         {
             _created = created;
         }
-        private Group1_Data_Model? ProcessDataForGroup1(object data)
-        {
-            if (data == null) { return null; }
-            try
-            {
-                return JsonSerializer.Deserialize<Group1_Data_Model>(data.ToString());
-            }
-            catch (JsonException)
-            {
-                return null;
-            }
-        }
+        
+        // private Group1_Data_Model? ProcessDataForGroup1(object data)
+        // {
+        //     if (data == null) { return null; }
+        //     try
+        //     {
+        //         return JsonSerializer.Deserialize<Group1_Data_Model>(data.ToString());
+        //     }
+        //     catch (JsonException)
+        //     {
+        //         return null;
+        //     }
+        // }
 
         public bool Create()
         {

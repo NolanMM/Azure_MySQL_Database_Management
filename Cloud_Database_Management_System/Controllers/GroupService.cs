@@ -1,20 +1,18 @@
 ﻿using Cloud_Database_Management_System.Models.Group_Data_Models;
-using Cloud_Database_Management_System.Repositories.Repositories_Interfaces;
 using System.Text.Json;
+using Cloud_Database_Management_System.Interfaces.Database_Services_Interfaces;
 
 namespace Cloud_Database_Management_System.Controllers
 {
-    public class GroupService : IGroupService
+    public abstract class GroupService : IGroupService
     {
         private readonly IGroupService groupRepository;
         private DateTime _created;
-        public GroupService(DateTime created)
-        {
-            _created = created;
-        }
-
+        
         public bool TryProcessData(int groupId, object data, out object result)
         {
+            DateTime create = DateTime.Now;
+            this._created = create;
             if (groupId == 0)
             {
                 result = null;

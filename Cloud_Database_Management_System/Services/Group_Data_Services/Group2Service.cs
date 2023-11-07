@@ -1,11 +1,11 @@
-﻿using Cloud_Database_Management_System.Interfaces;
+﻿using Cloud_Database_Management_System.Interfaces.Database_Services_Interfaces;
+using Cloud_Database_Management_System.Interfaces.Repositories_Interfaces;
 using Cloud_Database_Management_System.Models.Group_Data_Models;
 using Cloud_Database_Management_System.Repositories;
-using Cloud_Database_Management_System.Repositories.Repositories_Interfaces;
 
 namespace Cloud_Database_Management_System.Services.Group_Data_Services
 {
-    public class Group2Service : IGroup2Service
+    public class Group2Service : IGroupService
     {
         private readonly IGroupRepository _group2Repository;
 

@@ -1,4 +1,4 @@
-﻿namespace Cloud_Database_Management_System.Repositories.Repositories_Interfaces
+﻿namespace Cloud_Database_Management_System.Interfaces.Repositories_Interfaces
 {
     public interface IGroupRepository
     {
