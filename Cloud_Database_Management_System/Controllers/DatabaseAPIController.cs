@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Cloud_Database_Management_System.Interfaces.Database_Services_Interfaces;
+using Cloud_Database_Management_System.Models.Group_Data_Models;
 
 namespace Cloud_Database_Management_System.Controllers
 {
@@ -27,17 +28,27 @@ namespace Cloud_Database_Management_System.Controllers
             return Ok(true);
         }
 
-        [HttpGet("group{groupId}/{TableNumber}")]
+        [HttpGet("group{groupId}/{tableNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult ProcessGetData(int groupId, int TableNumber)
+        public async Task<IActionResult> ProcessGetData(int groupId, int tableNumber)
         {
-            if (!_groupService.ProcessGetData(groupId, TableNumber, out var result))
+            object result = await _groupService.ProcessGetData(groupId, tableNumber);
+
+            if (result is bool && !(bool)result)
             {
                 return BadRequest("Invalid data for the specified group.");
             }
+            else if (result is object)
+            {
+                return Ok(result);
+            }
+            else if (result is string)
+            {
+                return Ok(result);
+            }
 
-            return Ok(result);
+            return NotFound();
         }
 
         [HttpGet("group{groupId}/GetAllData")]
@@ -62,29 +73,5 @@ namespace Cloud_Database_Management_System.Controllers
 
             return NotFound();
         }
-
-        //[HttpGet("group{groupId}/GetAllData")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public IActionResult CheckTheConnection(int groupId)
-        //{
-        //    if (!_groupService.ProcessGetAllData(groupId, out var result))
-        //    {
-        //        return BadRequest("Invalid data for the specified group.");
-        //    }
-
-        //    if (result is Dictionary<string, object>)
-        //    {
-        //        return Ok(result);
-        //    }
-        //    else if (result is Exception)
-        //    {
-        //        // Handle the exception if needed
-        //        return BadRequest("An error occurred: " + ((Exception)result).Message);
-        //    }
-
-        //    return NotFound();
-        //}
-
     }
 }

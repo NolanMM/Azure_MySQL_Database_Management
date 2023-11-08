@@ -37,9 +37,25 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
                 return ex;
             }
         }
-        public object ProcessGetRequestDataCorrespondGroupID(int tablenumber)
+        public async Task<object> ProcessGetRequestDataCorrespondGroupID(int tablenumber)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (tablenumber >= 0 && tablenumber < Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.Count)
+                {
+                    string tablename = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type[tablenumber].TableName;
+                    object resultsAllDataInTables = await _Group1Repository.ReadTable(tablename);
+                    return resultsAllDataInTables;
+                }
+                else
+                {
+                    return "Invalid tablenumber";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex;
+            }
         }
 
         public bool ProcessPostRequestDataCorrespondGroupID(object data,int tablenumber)

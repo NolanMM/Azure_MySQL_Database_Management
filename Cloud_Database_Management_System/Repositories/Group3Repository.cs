@@ -177,12 +177,13 @@ namespace Cloud_Database_Management_System.Repositories
         {
             throw new NotImplementedException();
         }
-        public Task<List<Group_Data_Model>> ReadTable(string tablename)
+
+        public Task<Dictionary<string, object>> ReadAllTables()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Dictionary<string, object>> ReadAllTables()
+        Task<object> IGroupRepository.ReadTable(string tablename)
         {
             throw new NotImplementedException();
         }

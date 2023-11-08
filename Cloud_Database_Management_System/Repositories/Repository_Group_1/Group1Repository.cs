@@ -4,6 +4,10 @@ using Cloud_Database_Management_System.Models.Group_Data_Models;
 using MySqlConnector;
 using Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface;
 using Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_Data_Tables_Class;
+using System.Buffers.Text;
+using System.Collections.Generic;
+using System.Reflection.Metadata;
+using System.Collections;
 
 namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
 {
@@ -103,11 +107,66 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
         /// Read Part
         /// </summary>
 
-        public Task<List<Group_Data_Model>> ReadTable(string tablename)
+        public async Task<object> ReadTable(string tablename)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (string.IsNullOrEmpty(tablename))
+                {
+                    return null;
+                }
+
+                bool result_init_table = await Initialize_Tables();
+                if (result_init_table)
+                {
+                    var tableInfo = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type_Table_Type.Find(t => t.TableName == tablename);
+
+                    if (tableInfo != null)
+                    {
+                        // Create an instance of the table class
+                        Input_Tables_Template table = tableInfo.TableType;
+
+                        List<object>? tableData = await table.ReadAllAsync();
+
+                        if (tableData != null)
+                        {
+                            List<List<object>> dataAsList = tableData.Select(item => new List<object> { item }).ToList();
+                            bool processingResult = Process_And_Print_Table_Data(dataAsList);
+                            object result = UpdateTableNameAndListData(tableInfo.TableName);
+                            return result;
+                        }
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
         }
 
+        private object UpdateTableNameAndListData(string tablename)
+        {
+            // Create a dictionary to map table names to their corresponding lists
+            Dictionary<string, object> Tablename_ListData_Dict = new Dictionary<string, object>
+            {
+                { "userview", Valid_User_Views_Table },
+                { "pageview", Website_logs_table },
+                { "sales_transaction_table", SalesTransactionsTable },
+                { "feedback_table", FeedbackTable }
+            };
+
+            if (Tablename_ListData_Dict.ContainsKey(tablename))
+            {
+                object tableData = Tablename_ListData_Dict[tablename];
+                //if (tableData is List<object> dataAsList)
+                //{
+                return tableData;
+                //}
+            }
+            return null;
+        }
         public async Task<Dictionary<string, object>> ReadAllTables()
         {
             try

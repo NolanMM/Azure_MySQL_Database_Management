@@ -4,7 +4,7 @@
     {
         bool ProcessPostRequestDataCorrespondGroupID(object data, int tablenumber);
 
-        object ProcessGetRequestDataCorrespondGroupID(int tablenumber);
+        Task<object> ProcessGetRequestDataCorrespondGroupID(int tablenumber);
 
         Task<object> ProcessGetRequestAllDataTablesCorrespondGroupID();
 

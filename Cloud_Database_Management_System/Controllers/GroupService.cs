@@ -1,6 +1,5 @@
-﻿using Cloud_Database_Management_System.Models.Group_Data_Models;
-using System.Text.Json;
-using Cloud_Database_Management_System.Interfaces.Database_Services_Interfaces;
+﻿using Cloud_Database_Management_System.Interfaces.Database_Services_Interfaces;
+using Cloud_Database_Management_System.Models.Group_Data_Models;
 using Cloud_Database_Management_System.Services.Group_Data_Services;
 
 namespace Cloud_Database_Management_System.Controllers
@@ -97,9 +96,9 @@ namespace Cloud_Database_Management_System.Controllers
                 }
             }
         }
-        public bool ProcessGetData(int groupId, int TableNumber, out object result)
+        public async Task<object> ProcessGetData(int groupId, int tableNumber)
         {
-            result = null;
+            object result = null;
 
             if (groupId == 0)
             {
@@ -118,10 +117,20 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_1_Services;
-                            groupService.ProcessGetRequestDataCorrespondGroupID(TableNumber);
-                            result = groupService; // Set the result to the groupService instance
-                            return true;
+                            var serviceResult = await groupService.ProcessGetRequestDataCorrespondGroupID(tableNumber);
+
+                            if (serviceResult is object)
+                            {
+                                result = serviceResult;
+                                return result;
+                            }
+                            else if (serviceResult is string)
+                            {
+                                result = serviceResult;
+                                return result;
+                            }
                         }
+                        return false;
                     default:
                         return false;
                 }
@@ -140,20 +149,19 @@ namespace Cloud_Database_Management_System.Controllers
                 switch (groupId)
                 {
                     case 1:
-                        var Group_1_Services = new Group1Service(_created);
-                        if (Group_1_Services != null)
+                         groupService = new Group1Service(_created);
+                        if (groupService != null)
                         {
-                            groupService = Group_1_Services;
                             var serviceResult = await groupService.ProcessGetRequestAllDataTablesCorrespondGroupID();
 
                             if (serviceResult is Dictionary<string, object>)
                             {
-                                result = serviceResult; // Set the result to the dictionary
+                                result = serviceResult;
                                 return result;
                             }
                             else if (serviceResult is Exception)
                             {
-                                result = serviceResult; // Set the result to the exception object
+                                result = serviceResult;
                                 return result;
                             }
                         }

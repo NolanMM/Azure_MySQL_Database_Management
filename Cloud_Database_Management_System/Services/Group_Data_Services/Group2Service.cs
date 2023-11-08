@@ -22,7 +22,7 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             _Group2Repository = new Group2Repository(created);
             _Created = created;
         }
-        public object ProcessGetRequestDataCorrespondGroupID(int tablenumber)
+        public async Task<object> ProcessGetRequestDataCorrespondGroupID(int tablenumber)
         {
             throw new NotImplementedException();
         }
