@@ -1,4 +1,6 @@
-﻿namespace Cloud_Database_Management_System.Models.Group_Data_Models.Group_1_Data_Model_Tables
+﻿using ClientGetHttp.DatabaseServices.Services.Models.Interfaces;
+
+namespace ClientGetHttp.DatabaseServices.Services.Model
 {
     public class UserView : Group_1_Record_Interface
     {

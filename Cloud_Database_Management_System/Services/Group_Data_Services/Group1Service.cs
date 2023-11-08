@@ -62,7 +62,7 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
         {
             try
             {
-                _Group1_Data_Model = ProcessDataForGroup1(data, tablenumber);
+                _Group1_Data_Model = (Input_Tables_Template ? )ProcessDataForGroup1(data, tablenumber);
                 Table_Group_1_Dictionary tableInfo = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.Index == tablenumber);
                 if (tableInfo == null)
                 {
@@ -80,7 +80,7 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             }
         }
 
-        private Input_Tables_Template? ProcessDataForGroup1(object data, int tableNumber)
+        private Group_Data_Model? ProcessDataForGroup1(object data, int tableNumber)
         {
             if (data == null) { return null; }
 
@@ -96,33 +96,42 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
 
             try
             {
+                JsonSerializerOptions options = new JsonSerializerOptions
+                {
+                    Converters = { new DateOnlyConverter() },
+                };
+
                 switch (tableNumber)
                 {
                     case 0:
                         if (dataType == typeof(UserView))
                         {
-                            return (Input_Tables_Template?)JsonSerializer.Deserialize<UserView>(data.ToString());
+                            UserView userView = JsonSerializer.Deserialize<UserView>(data.ToString(), options);
+                            return (Group_Data_Model?)userView;
                         }
                         break;
 
                     case 1:
                         if (dataType == typeof(PageView))
                         {
-                            return (Input_Tables_Template?)JsonSerializer.Deserialize<PageView>(data.ToString());
+                            PageView pageView = JsonSerializer.Deserialize<PageView>(data.ToString(), options);
+                            return (Input_Tables_Template?)pageView;
                         }
                         break;
 
                     case 2:
                         if (dataType == typeof(SaleTransaction))
                         {
-                            return (Input_Tables_Template?)JsonSerializer.Deserialize<SaleTransaction>(data.ToString());
+                            SaleTransaction saleTransaction = JsonSerializer.Deserialize<SaleTransaction>(data.ToString(), options);
+                            return (Input_Tables_Template?)saleTransaction;
                         }
                         break;
 
                     case 3:
                         if (dataType == typeof(Feedback))
                         {
-                            return (Input_Tables_Template?)JsonSerializer.Deserialize<Feedback>(data.ToString());
+                            Feedback feedback = JsonSerializer.Deserialize<Feedback>(data.ToString(), options);
+                            return (Input_Tables_Template?)feedback;
                         }
                         break;
 
