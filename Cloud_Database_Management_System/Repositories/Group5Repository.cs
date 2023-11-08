@@ -11,6 +11,11 @@ namespace Cloud_Database_Management_System.Repositories
             _created = created;
         }
 
+        public Task<bool> Create(Group_Data_Model group_Data_Model, DateTime _Created, string tablename)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Delete()
         {
             throw new NotImplementedException();
@@ -31,12 +36,12 @@ namespace Cloud_Database_Management_System.Repositories
             throw new NotImplementedException();
         }
 
-        Task<bool> IGroupRepository.Create(Group_Data_Model group_Data_Model, DateTime _Created)
+        public Task<List<Group_Data_Model>> ReadTable(string tablename)
         {
             throw new NotImplementedException();
         }
 
-        Task<List<Group_Data_Model>> IGroupRepository.Read()
+        public Task<Dictionary<string, object>> ReadAllTables()
         {
             throw new NotImplementedException();
         }

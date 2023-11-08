@@ -17,20 +17,25 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             _Group5Repository = new Group5Repository(created);
             _Created = created;
         }
+        public Group5Service(DateTime created)
+        {
+            _Group5Repository = new Group5Repository(created);
+            _Created = created;
+        }
 
-        public bool ProcessGetRequestDataCorrespondGroupID(object data, string Tablename)
+        public bool ProcessGetRequestDataCorrespondGroupID(int tablenumber)
         {
             throw new NotImplementedException();
         }
 
-        public bool ProcessPostRequestDataCorrespondGroupID(object data, string Tablename)
+        public bool ProcessPostRequestDataCorrespondGroupID(object data, int Tablenumber)
         {
             try
             {
                 _Group5_Data_Model = ProcessDataForGroup5(data);
                 if (_Group5_Data_Model != null)
                 {
-                    _Group5Repository.Create(_Group5_Data_Model, _Created, Tablename);
+                    _Group5Repository.Create(_Group5_Data_Model, _Created, Tablenumber.ToString());
                     return true;
                 }
                 else { return false; }

@@ -1,23 +1,11 @@
-﻿using MySqlConnector;
-using Server_Side.Database_Services.Table_Interface;
-using static Server_Side.Services.Analysis_Report_Services;
+﻿using Cloud_Database_Management_System.Models.Group_Data_Models.Group_1_Data_Model_Tables;
+using Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface;
+using MySqlConnector;
 
 namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_Data_Tables_Class
 {
     public class Pageview_table : Input_Tables_Template
     {
-        //internal class PageView
-        //{
-        //    public string SessionId { get; set; }
-        //    public string UserId { get; set; }
-        //    public string PageUrl { get; set; }
-        //    public string PageInfo { get; set; }
-        //    public string ProductId { get; set; }
-        //    public DateTime DateTime { get; set; }
-        //    public DateTime Start_Time { get; set; }
-        //    public DateTime End_Time { get; set; }
-        //}
-
         // Class Attributes
         private readonly string table_name = "pageview";
         private readonly string schemma = "analysis_and_reporting_raw_data";

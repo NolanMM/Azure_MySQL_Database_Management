@@ -15,7 +15,7 @@ namespace Cloud_Database_Management_System.Controllers
             _created = created;
         }
 
-        public bool ProcessPostData(int groupId, string Tablename, object data)
+        public bool ProcessPostData(int groupId, int TableNumber, object data)
         {
             if (groupId == 0) { return false; }
             else {
@@ -29,7 +29,7 @@ namespace Cloud_Database_Management_System.Controllers
                         }else
                         {
                             groupService = Group_1_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
                             return true;
                         }
                     case 2:
@@ -41,7 +41,7 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_2_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
                             return true;
                         }
                     case 3:
@@ -53,7 +53,7 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_3_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
                             return true;
                         }
                     case 4:
@@ -65,7 +65,7 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_4_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
                             return true;
                         }
                     case 5:
@@ -77,7 +77,7 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_5_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
                             return true;
                         }
                     case 6:
@@ -89,7 +89,7 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_6_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, Tablename);
+                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
                             return true;
                         }
                     default:
@@ -97,7 +97,7 @@ namespace Cloud_Database_Management_System.Controllers
                 }
             }
         }
-        public bool ProcessGetData(int groupId, string Tablename, object data, out object result)
+        public bool ProcessGetData(int groupId, int TableNumber, out object result)
         {
             result = null;
 
@@ -110,7 +110,7 @@ namespace Cloud_Database_Management_System.Controllers
                 switch (groupId)
                 {
                     case 1:
-                        var Group_1_Services = new Group1Service(_created, data);
+                        var Group_1_Services = new Group1Service(_created);
                         if (Group_1_Services == null)
                         {
                             return false;
@@ -118,7 +118,7 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_1_Services;
-                            groupService.ProcessGetRequestDataCorrespondGroupID(data, Tablename);
+                            groupService.ProcessGetRequestDataCorrespondGroupID(TableNumber);
                             result = groupService; // Set the result to the groupService instance
                             return true;
                         }

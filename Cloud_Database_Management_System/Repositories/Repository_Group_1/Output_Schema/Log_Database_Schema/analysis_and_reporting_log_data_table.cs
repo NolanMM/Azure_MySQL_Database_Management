@@ -1,5 +1,5 @@
-﻿using MySqlConnector;
-using Server_Side.Database_Services.Table_Interface;
+﻿using Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface;
+using MySqlConnector;
 
 namespace Server_Side.Database_Services.Output_Schema.Log_Database_Schema
 {

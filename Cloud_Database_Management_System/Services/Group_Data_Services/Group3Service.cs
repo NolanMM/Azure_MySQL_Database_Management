@@ -18,19 +18,25 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             _Created = created;
         }
 
-        public bool ProcessGetRequestDataCorrespondGroupID(object data, string Tablename)
+        public Group3Service(DateTime created)
+        {
+            _Group3Repository = new Group3Repository(created);
+            _Created = created;
+        }
+
+        public bool ProcessGetRequestDataCorrespondGroupID(int tablenumber)
         {
             throw new NotImplementedException();
         }
 
-        public bool ProcessPostRequestDataCorrespondGroupID(object data, string Tablename)
+        public bool ProcessPostRequestDataCorrespondGroupID(object data, int Tablenumber)
         {
             try
             {
                 _Group3_DataModel = ProcessDataForGroup3(data);
                 if (_Group3_DataModel != null)
                 {
-                    _Group3Repository.Create(_Group3_DataModel, _Created, Tablename);
+                    _Group3Repository.Create(_Group3_DataModel, _Created, Tablenumber.ToString());
                     return true;
                 }
                 else { return false; }

@@ -1,4 +1,4 @@
-﻿namespace Server_Side.Database_Services.Table_Interface
+﻿namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface
 {
     public interface Output_Tables_Template
     {

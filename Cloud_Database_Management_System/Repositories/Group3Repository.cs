@@ -173,5 +173,18 @@ namespace Cloud_Database_Management_System.Repositories
             throw new NotImplementedException();
         }
 
+        public Task<bool> Create(Group_Data_Model group_Data_Model, DateTime _Created, string tablename)
+        {
+            throw new NotImplementedException();
+        }
+        public Task<List<Group_Data_Model>> ReadTable(string tablename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Dictionary<string, object>> ReadAllTables()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

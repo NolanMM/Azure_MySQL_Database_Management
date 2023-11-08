@@ -1,19 +1,11 @@
-﻿using MySqlConnector;
-using Server_Side.Database_Services.Table_Interface;
-using static Server_Side.Services.Analysis_Report_Services;
+﻿using Cloud_Database_Management_System.Models.Group_Data_Models.Group_1_Data_Model_Tables;
+using Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface;
+using MySqlConnector;
 
 namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_Data_Tables_Class
 {
     public class Salestransaction_table : Input_Tables_Template
     {
-        //internal class SaleTransaction
-        //{
-        //    public string TransactionId { get; set; }
-        //    public string UserId { get; set; }
-        //    public decimal TransactionValue { get; set; }
-        //    public DateTime Date { get; set; }
-        //}
-
         // Class Attributes
         private readonly string table_name = "sales_transaction_table";
         private readonly string schemma = "analysis_and_reporting_raw_data";

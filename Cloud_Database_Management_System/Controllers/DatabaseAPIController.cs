@@ -14,13 +14,12 @@ namespace Cloud_Database_Management_System.Controllers
             _groupService = new GroupService(DateTime.Now);
         }
 
-        // Create New record base on group ID and table name
-        [HttpPost("group{groupId}")]
+        [HttpPost("group{groupId}/{TableNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult ProcessGroupData(int groupId, string Tablename,  [FromBody] object data)
+        public IActionResult ProcessGroupData(int groupId, int TableNumber,  [FromBody] object data)
         {
-            if (!_groupService.ProcessPostData(groupId, Tablename, data))
+            if (!_groupService.ProcessPostData(groupId, TableNumber, data))
             {
                 return BadRequest("Invalid data for the specified group.");
             }
@@ -28,13 +27,12 @@ namespace Cloud_Database_Management_System.Controllers
             return Ok(true);
         }
 
-
-        [HttpGet("group{groupId}/{Tablename}")]
+        [HttpGet("group{groupId}/{TableNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult ProcessGroupDa1ta(int groupId, string Tablename, [FromBody] object data)
+        public IActionResult ProcessGroupDa1ta(int groupId, int TableNumber)
         {
-            if (!_groupService.ProcessGetData(groupId, Tablename, data, out var result))
+            if (!_groupService.ProcessGetData(groupId, TableNumber, out var result))
             {
                 return BadRequest("Invalid data for the specified group.");
             }

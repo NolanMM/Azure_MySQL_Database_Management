@@ -1,19 +1,11 @@
-﻿using Server_Side.Database_Services.Table_Interface;
+﻿using Cloud_Database_Management_System.Models.Group_Data_Models.Group_1_Data_Model_Tables;
+using Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface;
 using MySqlConnector;
-using static Server_Side.Services.Analysis_Report_Services;
 
 namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_Data_Tables_Class
 {
     public class Feedback_table : Input_Tables_Template
     {
-        // Private inner data classes just when developing
-        //internal class Feedback
-        //{
-        //    public int FeedbackId { get; set; }
-        //    public string UserId { get; set; }
-        //    public string ProductId { get; set; }
-        //    public decimal StarRating { get; set; }
-        //}
         // Class Attributes
         private readonly string table_name = "feedback_table";
         private readonly string schemma = "analysis_and_reporting_raw_data";

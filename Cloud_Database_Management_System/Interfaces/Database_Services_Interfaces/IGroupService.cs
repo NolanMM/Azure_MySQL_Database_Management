@@ -2,9 +2,9 @@
 {
     public interface IGroupService
     {
-        bool ProcessPostRequestDataCorrespondGroupID(object data, string Tablename);
+        bool ProcessPostRequestDataCorrespondGroupID(object data, int tablenumber);
 
-        bool ProcessGetRequestDataCorrespondGroupID(object data, string Tablename);
+        bool ProcessGetRequestDataCorrespondGroupID(int tablenumber);
 
     }
 }
