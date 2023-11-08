@@ -1,10 +1,15 @@
+using Cloud_Database_Management_System;
 using Cloud_Database_Management_System.Controllers;
-using Cloud_Database_Management_System.Interfaces.Database_Services_Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new DateOnlyConverter());
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -43,25 +43,48 @@ namespace Cloud_Database_Management_System.Controllers
         [HttpGet("group{groupId}/GetAllData")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult ProcessGetAllDataTable(int groupId)
+        public async Task<IActionResult> ProcessGetAllDataTable(int groupId)
         {
-            if (!_groupService.ProcessGetAllData(groupId, out var result))
+            var result = await _groupService.ProcessGetAllData(groupId);
+
+            if (result is bool && !(bool)result)
             {
                 return BadRequest("Invalid data for the specified group.");
             }
-
-            if (result is Dictionary<string, object>)
+            else if (result is Dictionary<string, object>)
             {
                 return Ok(result);
             }
             else if (result is Exception)
             {
-                // Handle the exception if needed
                 return BadRequest("An error occurred: " + ((Exception)result).Message);
             }
 
             return NotFound();
         }
+
+        //[HttpGet("group{groupId}/GetAllData")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public IActionResult CheckTheConnection(int groupId)
+        //{
+        //    if (!_groupService.ProcessGetAllData(groupId, out var result))
+        //    {
+        //        return BadRequest("Invalid data for the specified group.");
+        //    }
+
+        //    if (result is Dictionary<string, object>)
+        //    {
+        //        return Ok(result);
+        //    }
+        //    else if (result is Exception)
+        //    {
+        //        // Handle the exception if needed
+        //        return BadRequest("An error occurred: " + ((Exception)result).Message);
+        //    }
+
+        //    return NotFound();
+        //}
 
     }
 }

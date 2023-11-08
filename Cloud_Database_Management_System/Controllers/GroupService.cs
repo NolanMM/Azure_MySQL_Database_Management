@@ -127,9 +127,9 @@ namespace Cloud_Database_Management_System.Controllers
                 }
             }
         }
-        public bool ProcessGetAllData(int groupId, out object result)
+        public async Task<object> ProcessGetAllData(int groupId)
         {
-            result = null;
+            object result = null;
 
             if (groupId == 0)
             {
@@ -141,31 +141,23 @@ namespace Cloud_Database_Management_System.Controllers
                 {
                     case 1:
                         var Group_1_Services = new Group1Service(_created);
-                        if (Group_1_Services == null)
-                        {
-                            return false;
-                        }
-                        else
+                        if (Group_1_Services != null)
                         {
                             groupService = Group_1_Services;
-                            var serviceResult = groupService.ProcessGetRequestAllDataTablesCorrespondGroupID();
+                            var serviceResult = await groupService.ProcessGetRequestAllDataTablesCorrespondGroupID();
 
                             if (serviceResult is Dictionary<string, object>)
                             {
                                 result = serviceResult; // Set the result to the dictionary
-                                return true;
+                                return result;
                             }
                             else if (serviceResult is Exception)
                             {
                                 result = serviceResult; // Set the result to the exception object
-                                return false;
-                            }
-                            else
-                            {
-                                return false;
+                                return result;
                             }
                         }
-                        break;
+                        return false;
                     default:
                         return false;
                 }

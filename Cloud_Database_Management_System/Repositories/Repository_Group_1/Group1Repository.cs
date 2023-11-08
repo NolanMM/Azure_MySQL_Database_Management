@@ -9,13 +9,13 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
 {
     public class Group1Repository : IGroupRepository
     {
-        public List<UserView> Valid_User_Views_Table;
-        public List<PageView> Website_logs_table;
-        public List<SaleTransaction> SalesTransactionsTable;
-        public List<Feedback> FeedbackTable;
-        private List<(string, string, Input_Tables_Template)> table_names_link_session_id_table_oject_list;
-        public List<(string, List<List<object>>)> All_Tables_Data_Retrive_Link_With_Session_ID;
-        private List<string> table_names_list;
+        public List<UserView> Valid_User_Views_Table = new List<UserView>();
+        public List<PageView> Website_logs_table = new List<PageView>();
+        public List<SaleTransaction> SalesTransactionsTable = new List<SaleTransaction>();
+        public List<Feedback> FeedbackTable = new List<Feedback>();
+        private List<(string, string, Input_Tables_Template)> table_names_link_session_id_table_oject_list = new List<(string, string, Input_Tables_Template)>();
+        public List<(string, List<List<object>>)> All_Tables_Data_Retrive_Link_With_Session_ID = new List<(string, List<List<object>>)>();
+        private List<string> table_names_list = new List<string>();
 
         private readonly string Input_schemma = "analysis_and_reporting_raw_data";
         private readonly string Log_schemma = "analysis_and_reporting_log_data";
