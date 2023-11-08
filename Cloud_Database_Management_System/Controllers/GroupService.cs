@@ -127,5 +127,49 @@ namespace Cloud_Database_Management_System.Controllers
                 }
             }
         }
+        public bool ProcessGetAllData(int groupId, out object result)
+        {
+            result = null;
+
+            if (groupId == 0)
+            {
+                return false;
+            }
+            else
+            {
+                switch (groupId)
+                {
+                    case 1:
+                        var Group_1_Services = new Group1Service(_created);
+                        if (Group_1_Services == null)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            groupService = Group_1_Services;
+                            var serviceResult = groupService.ProcessGetRequestAllDataTablesCorrespondGroupID();
+
+                            if (serviceResult is Dictionary<string, object>)
+                            {
+                                result = serviceResult; // Set the result to the dictionary
+                                return true;
+                            }
+                            else if (serviceResult is Exception)
+                            {
+                                result = serviceResult; // Set the result to the exception object
+                                return false;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        break;
+                    default:
+                        return false;
+                }
+            }
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             _Created = created;
         }
 
-        public bool ProcessGetRequestDataCorrespondGroupID(int tablenumber)
+        public object ProcessGetRequestDataCorrespondGroupID(int tablenumber)
         {
             throw new NotImplementedException();
         }
@@ -58,6 +58,16 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             {
                 return null;
             }
+        }
+
+        public object ProcessGetRequestAllDataTablesCorrespondGroupID()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<object> IGroupService.ProcessGetRequestAllDataTablesCorrespondGroupID()
+        {
+            throw new NotImplementedException();
         }
     }
 }

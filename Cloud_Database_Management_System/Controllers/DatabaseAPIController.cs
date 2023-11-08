@@ -17,7 +17,7 @@ namespace Cloud_Database_Management_System.Controllers
         [HttpPost("group{groupId}/{TableNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult ProcessGroupData(int groupId, int TableNumber,  [FromBody] object data)
+        public IActionResult ProcessPostData(int groupId, int TableNumber,  [FromBody] object data)
         {
             if (!_groupService.ProcessPostData(groupId, TableNumber, data))
             {
@@ -30,7 +30,7 @@ namespace Cloud_Database_Management_System.Controllers
         [HttpGet("group{groupId}/{TableNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult ProcessGroupDa1ta(int groupId, int TableNumber)
+        public IActionResult ProcessGetData(int groupId, int TableNumber)
         {
             if (!_groupService.ProcessGetData(groupId, TableNumber, out var result))
             {
@@ -38,6 +38,29 @@ namespace Cloud_Database_Management_System.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpGet("group{groupId}/GetAllData")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult ProcessGetAllDataTable(int groupId)
+        {
+            if (!_groupService.ProcessGetAllData(groupId, out var result))
+            {
+                return BadRequest("Invalid data for the specified group.");
+            }
+
+            if (result is Dictionary<string, object>)
+            {
+                return Ok(result);
+            }
+            else if (result is Exception)
+            {
+                // Handle the exception if needed
+                return BadRequest("An error occurred: " + ((Exception)result).Message);
+            }
+
+            return NotFound();
         }
 
     }

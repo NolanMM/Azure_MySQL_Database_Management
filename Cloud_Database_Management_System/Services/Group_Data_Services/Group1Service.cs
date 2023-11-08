@@ -25,18 +25,21 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             _Group1Repository = new Group1Repository(created);
             _Created = created;
         }
-
-        public bool ProcessGetRequestDataCorrespondGroupID(int tablenumber)
+        public async Task<object> ProcessGetRequestAllDataTablesCorrespondGroupID()
         {
             try
             {
-                _Group1Repository.ReadAllTables();
-                return true;
+                Dictionary<string, object> ResultsAllTables = await _Group1Repository.ReadAllTables();
+                return ResultsAllTables;
             }
             catch (Exception ex)
             {
-                return false;
+                return ex;
             }
+        }
+        public object ProcessGetRequestDataCorrespondGroupID(int tablenumber)
+        {
+            throw new NotImplementedException();
         }
 
         public bool ProcessPostRequestDataCorrespondGroupID(object data,int tablenumber)
