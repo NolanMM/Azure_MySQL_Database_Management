@@ -15,7 +15,7 @@ namespace Cloud_Database_Management_System.Controllers
             _groupService = new GroupService(DateTime.Now);
         }
 
-        [HttpPost("group{groupId}/{TableNumber}")]
+        [HttpPost("POST/group{groupId}/{TableNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ProcessPostDataAsync(int groupId, int TableNumber,  [FromBody] object data)
