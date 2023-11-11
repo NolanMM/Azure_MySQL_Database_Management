@@ -29,14 +29,14 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             throw new NotImplementedException();
         }
 
-        public bool ProcessPostRequestDataCorrespondGroupID(object data, int Tablenumber)
+        public async Task<bool> ProcessPostRequestDataCorrespondGroupIDAsync(object data, int Tablenumber)
         {
             try
             {
                 _Group3_DataModel = ProcessDataForGroup3(data);
                 if (_Group3_DataModel != null)
                 {
-                    _Group3Repository.Create(_Group3_DataModel, _Created, Tablenumber.ToString());
+                    await _Group3Repository.Create(_Group3_DataModel, _Created, Tablenumber.ToString());
                     return true;
                 }
                 else { return false; }

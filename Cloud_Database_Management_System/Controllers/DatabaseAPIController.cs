@@ -18,9 +18,10 @@ namespace Cloud_Database_Management_System.Controllers
         [HttpPost("group{groupId}/{TableNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult ProcessPostData(int groupId, int TableNumber,  [FromBody] object data)
+        public async Task<IActionResult> ProcessPostDataAsync(int groupId, int TableNumber,  [FromBody] object data)
         {
-            if (!_groupService.ProcessPostData(groupId, TableNumber, data))
+            object results = await _groupService.ProcessPostDataAsync(groupId, TableNumber, data);
+            if (results is bool && !(bool)results)
             {
                 return BadRequest("Invalid data for the specified group.");
             }

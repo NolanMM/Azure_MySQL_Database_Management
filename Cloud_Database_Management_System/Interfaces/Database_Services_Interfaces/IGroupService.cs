@@ -2,7 +2,7 @@
 {
     public interface IGroupService
     {
-        bool ProcessPostRequestDataCorrespondGroupID(object data, int tablenumber);
+        Task<bool> ProcessPostRequestDataCorrespondGroupIDAsync(object data, int tablenumber);
 
         Task<object> ProcessGetRequestDataCorrespondGroupID(int tablenumber);
 

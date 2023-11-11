@@ -2,17 +2,17 @@
 {
     public class Feedback : Group_1_Record_Interface
     {
-        public  int FeedbackId { get; set; }
-        public  string UserId { get; set; }
-        public  string ProductId { get; set; }
-        public  decimal StarRating { get; set; }
+        public  int Feedback_ID { get; set; }
+        public  string User_ID { get; set; }
+        public  string Product_ID { get; set; }
+        public  decimal Stars_Rating { get; set; }
 
         public Feedback()
         {
-            FeedbackId = 0;
-            UserId = string.Empty;
-            ProductId = string.Empty;
-            StarRating = 0;
+            Feedback_ID = 0;
+            User_ID = string.Empty;
+            Product_ID = string.Empty;
+            Stars_Rating = 0;
         }
     }
 }

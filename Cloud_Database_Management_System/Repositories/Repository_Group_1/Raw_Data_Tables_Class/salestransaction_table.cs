@@ -47,10 +47,10 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_D
                 {
                     var saleTransaction = new SaleTransaction
                     {
-                        TransactionId = reader.GetString(0),
-                        UserId = reader.GetString(1),
-                        TransactionValue = reader.GetDecimal(2),
-                        Date = reader.GetDateTime(3),
+                        Transaction_ID = reader.GetString(0),
+                        User_ID = reader.GetString(1),
+                        Order_Value = reader.GetDecimal(2),
+                        date = reader.GetDateTime(3),
                     };
                     saleTransaction_list.Add(saleTransaction);
                 }

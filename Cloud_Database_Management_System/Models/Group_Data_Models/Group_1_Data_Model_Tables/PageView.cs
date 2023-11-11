@@ -3,21 +3,19 @@
     public class PageView : Group_1_Record_Interface
     {
         public string SessionId { get; set; }
-        public string UserId { get; set; }
-        public string PageUrl { get; set; }
-        public string PageInfo { get; set; }
-        public string ProductId { get; set; }
-        public DateTime DateTime { get; set; }
+        public string Page_Name { get; set; }
+        public string Page_Info { get; set; }
+        public string Product_ID { get; set; }
         public DateTime Start_Time { get; set; }
         public DateTime End_Time { get; set; }
+        public string UserID { get; set; }
 
         public PageView() {
             SessionId = string.Empty;
-            UserId = string.Empty;
-            PageInfo = string.Empty;
-            PageUrl = string.Empty;
-            ProductId = string.Empty;
-            DateTime = DateTime.MinValue;
+            UserID = string.Empty;
+            Page_Name = string.Empty;
+            Page_Info = string.Empty;
+            Product_ID = string.Empty;
             Start_Time = DateTime.MinValue;
             End_Time = DateTime.MinValue;
         }

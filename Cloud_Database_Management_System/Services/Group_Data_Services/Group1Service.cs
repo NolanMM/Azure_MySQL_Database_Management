@@ -11,7 +11,7 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
     public class Group1Service : IGroupService
     {
         private IGroupRepository _Group1Repository;
-        private Input_Tables_Template _Group1_Data_Model;
+        private Group_Data_Model _Group1_Data_Model;
         private DateTime _Created;
 
         public Group1Service(DateTime created, object data)
@@ -58,11 +58,11 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             }
         }
 
-        public bool ProcessPostRequestDataCorrespondGroupID(object data,int tablenumber)
+        public async Task<bool> ProcessPostRequestDataCorrespondGroupIDAsync(object data,int tablenumber)
         {
             try
             {
-                _Group1_Data_Model = (Input_Tables_Template ? )ProcessDataForGroup1(data, tablenumber);
+                _Group1_Data_Model = (Group_Data_Model? )ProcessDataForGroup1(data, tablenumber);
                 Table_Group_1_Dictionary tableInfo = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.Index == tablenumber);
                 if (tableInfo == null)
                 {
@@ -70,7 +70,7 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
                 }
                 if (_Group1_Data_Model != null)
                 {
-                    _Group1Repository.Create(_Group1_Data_Model, _Created, tableInfo.TableName);
+                    await _Group1Repository.Create(_Group1_Data_Model, _Created, tableInfo.TableName);
                     return true;
                 }else { return false; }
             }
@@ -115,7 +115,7 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
                         if (dataType == typeof(PageView))
                         {
                             PageView pageView = JsonSerializer.Deserialize<PageView>(data.ToString(), options);
-                            return (Input_Tables_Template?)pageView;
+                            return (Group_Data_Model?)pageView;
                         }
                         break;
 
@@ -123,7 +123,7 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
                         if (dataType == typeof(SaleTransaction))
                         {
                             SaleTransaction saleTransaction = JsonSerializer.Deserialize<SaleTransaction>(data.ToString(), options);
-                            return (Input_Tables_Template?)saleTransaction;
+                            return (Group_Data_Model?)saleTransaction;
                         }
                         break;
 
@@ -131,7 +131,7 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
                         if (dataType == typeof(Feedback))
                         {
                             Feedback feedback = JsonSerializer.Deserialize<Feedback>(data.ToString(), options);
-                            return (Input_Tables_Template?)feedback;
+                            return (Group_Data_Model?)feedback;
                         }
                         break;
 

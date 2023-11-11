@@ -54,48 +54,47 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
         {
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(connect_String))
+                using MySqlConnection connection = new MySqlConnection(connect_String);
+                connection.Open();
+                Type dataType = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.TableName.Equals(tablename, StringComparison.OrdinalIgnoreCase))?.DataType;
+
+                if (dataType == null)
                 {
-                    await connection.OpenAsync();
+                    Console.WriteLine("Table not found for the provided tablename.");
+                    return false;
+                }
 
-                    Type dataType = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.TableName.Equals(tablename, StringComparison.OrdinalIgnoreCase))?.DataType;
+                // Use reflection to get the property names from the data model
+                string[] propertyNames = dataType.GetProperties()
+                    .Where(p => p.Name != "Id")
+                    .Select(p => p.Name)
+                    .ToArray();
 
-                    if (dataType == null)
+                // Create SQL query placeholders for column names and parameter names
+                string columnNames = string.Join(", ", propertyNames.Select(name => $"`{name}`"));
+                string parameterNames = string.Join(", ", propertyNames.Select(name => $"@{name}"));
+
+                // Create a new SQL command to insert data into the specified table
+                string query = $"INSERT INTO `{tablename}` ({columnNames}) VALUES ({parameterNames})";
+
+                using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                {
+                    // Set command parameters based on property names
+                    foreach (var propertyName in propertyNames)
                     {
-                        Console.WriteLine("Table not found for the provided tablename.");
-                        return false;
+                        var propertyValue = dataType.GetProperty(propertyName)?.GetValue(group_Data_Model, null);
+                        cmd.Parameters.AddWithValue($"@{propertyName}", propertyValue);
                     }
 
-                    // Use reflection to get the property names from the data model
-                    string[] propertyNames = dataType.GetProperties()
-                        .Where(p => p.Name != "Id")
-                        .Select(p => p.Name)
-                        .ToArray();
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
-                    // Create SQL query placeholders for column names and parameter names
-                    string columnNames = string.Join(", ", propertyNames.Select(name => $"`{name}`"));
-                    string parameterNames = string.Join(", ", propertyNames.Select(name => $"@{name}"));
-
-                    // Create a new SQL command to insert data into the specified table
-                    string query = $"INSERT INTO `{tablename}` ({columnNames}) VALUES ({parameterNames})";
-
-                    using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                    if (rowsAffected > 0)
                     {
-                        // Set command parameters based on property names
-                        foreach (var propertyName in propertyNames)
-                        {
-                            var propertyValue = dataType.GetProperty(propertyName)?.GetValue(group_Data_Model, null);
-                            cmd.Parameters.AddWithValue($"@{propertyName}", propertyValue);
-                        }
-
-                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-                        if (rowsAffected > 0)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
+                // Close the connection
+                connection.Close();
             }
             catch (Exception ex)
             {

@@ -2,16 +2,16 @@
 {
     public class SaleTransaction : Group_1_Record_Interface
     {
-        public string TransactionId { get; set; }
-        public string UserId { get; set; }
-        public decimal TransactionValue { get; set; }
-        public DateTime Date { get; set; }
+        public string Transaction_ID { get; set; }
+        public string User_ID { get; set; }
+        public decimal Order_Value { get; set; }
+        public DateTime date { get; set; }
 
-        public SaleTransaction() { 
-            TransactionId = string.Empty;
-            UserId = string.Empty;
-            TransactionValue = 0;
-            Date = DateTime.MinValue;
+        public SaleTransaction() {
+            Transaction_ID = string.Empty;
+            User_ID = string.Empty;
+            Order_Value = 0;
+            date = DateTime.MinValue;
         }
     }
 }

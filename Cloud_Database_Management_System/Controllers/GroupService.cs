@@ -14,7 +14,7 @@ namespace Cloud_Database_Management_System.Controllers
             _created = created;
         }
 
-        public bool ProcessPostData(int groupId, int TableNumber, object data)
+        public async Task<bool> ProcessPostDataAsync(int groupId, int TableNumber, object data)
         {
             if (groupId == 0) { return false; }
             else {
@@ -28,7 +28,7 @@ namespace Cloud_Database_Management_System.Controllers
                         }else
                         {
                             groupService = Group_1_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
+                            await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
                             return true;
                         }
                     case 2:
@@ -40,7 +40,7 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_2_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
+                            await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
                             return true;
                         }
                     case 3:
@@ -52,7 +52,7 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_3_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
+                            await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
                             return true;
                         }
                     case 4:
@@ -64,7 +64,7 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_4_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
+                            await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
                             return true;
                         }
                     case 5:
@@ -76,7 +76,7 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_5_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
+                            await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
                             return true;
                         }
                     case 6:
@@ -88,7 +88,7 @@ namespace Cloud_Database_Management_System.Controllers
                         else
                         {
                             groupService = Group_6_Services;
-                            groupService.ProcessPostRequestDataCorrespondGroupID(data, TableNumber);
+                            await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
                             return true;
                         }
                     default:

@@ -47,7 +47,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_D
                 {
                     var userView = new UserView
                     {
-                        User_Id = reader.GetString("User_Id"),
+                        User_ID = reader.GetString("User_ID"),
                         Start_Date = reader.GetDateOnly("Start_Date"),
                         End_Date = reader.GetDateOnly("End_Date"),
                         Timestamp = reader.GetDateTime("Timestamp")
