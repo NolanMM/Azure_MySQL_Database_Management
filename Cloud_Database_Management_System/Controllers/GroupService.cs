@@ -28,8 +28,22 @@ namespace Cloud_Database_Management_System.Controllers
                         }else
                         {
                             groupService = Group_1_Services;
-                            await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
-                            return true;
+                            try
+                            {
+                                bool result = await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
+
+                                if (!result)
+                                {
+                                    return false;
+                                }
+
+                                return true;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Error: " + ex.Message);
+                                return false;
+                            }
                         }
                     case 2:
                         var Group_2_Services = new Group2Service(_created, data);
