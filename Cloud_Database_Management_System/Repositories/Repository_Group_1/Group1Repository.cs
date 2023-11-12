@@ -4,11 +4,7 @@ using Cloud_Database_Management_System.Models.Group_Data_Models;
 using MySqlConnector;
 using Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface;
 using Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_Data_Tables_Class;
-using System.Buffers.Text;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
-using System.Collections;
-
+using System.IO;
 namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
 {
     public class Group1Repository : IGroupRepository
@@ -55,8 +51,9 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
             try
             {
                 using MySqlConnection connection = new MySqlConnection(connect_String);
-                connection.Open();
-                Type dataType = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.TableName.Equals(tablename, StringComparison.OrdinalIgnoreCase))?.DataType;
+                await connection.OpenAsync();
+
+                Type? dataType = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.TableName.Equals(tablename, StringComparison.OrdinalIgnoreCase))?.DataType;
 
                 if (dataType == null)
                 {
@@ -90,17 +87,59 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
 
                     if (rowsAffected > 0)
                     {
-                        return true;
+                        // Log data to a text file
+                        LogDataToFile(tablename, group_Data_Model, _Created);
                     }
+
+                    // Close the connection
+                    await connection.CloseAsync();
+
+                    return rowsAffected > 0;
                 }
-                // Close the connection
-                connection.Close();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
+
+                // Log the error
+                LogError(tablename, ex.Message);
+
+                return false;
             }
-            return false;
+        }
+        private static void LogError(string tablename, string errorMessage)
+        {
+            try
+            {
+                string logFilePath = @"C:\Users\Minh\Desktop\Log_Errors.txt";
+
+                // Format the data and time for logging
+                string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Error writing to {tablename} table: {errorMessage}\n";
+
+                // Append the log entry to the file
+                File.AppendAllText(logFilePath, logEntry);
+            }
+            catch (Exception logEx)
+            {
+                Console.WriteLine("Error logging error: " + logEx.Message);
+            }
+        }
+        private static void LogDataToFile(string tablename, Group_Data_Model group_Data_Model, DateTime created)
+        {
+            try
+            {
+                string logFilePath = @"C:\Users\Minh\Desktop\Log_Files.txt";
+
+                // Format the data and time for logging
+                string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Data written to {tablename} table: {Newtonsoft.Json.JsonConvert.SerializeObject(group_Data_Model)}\n";
+
+                // Append the log entry to the file
+                File.AppendAllText(logFilePath, logEntry);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error logging data: " + ex.Message);
+            }
         }
         /// <summary>
         /// Read Part

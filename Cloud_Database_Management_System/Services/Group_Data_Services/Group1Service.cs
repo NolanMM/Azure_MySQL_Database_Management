@@ -58,29 +58,30 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             }
         }
 
-        public async Task<bool> ProcessPostRequestDataCorrespondGroupIDAsync(object data,int tablenumber)
+        public async Task<bool> ProcessPostRequestDataCorrespondGroupIDAsync(object data, int tableNumber)
         {
             try
             {
-                _Group1_Data_Model = (Group_Data_Model? )ProcessDataForGroup1(data, tablenumber);
-                Table_Group_1_Dictionary tableInfo = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.Index == tablenumber);
-                if (tableInfo == null)
+                _Group1_Data_Model = (Group_Data_Model?)ProcessDataForGroup1(data, tableNumber);
+                Table_Group_1_Dictionary tableInfo = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.Index == tableNumber);
+
+                if (tableInfo == null || _Group1_Data_Model == null)
                 {
                     return false;
                 }
-                if (_Group1_Data_Model != null)
-                {
-                    await _Group1Repository.Create(_Group1_Data_Model, _Created, tableInfo.TableName);
-                    return true;
-                }else { return false; }
+
+                return await _Group1Repository.Create(_Group1_Data_Model, _Created, tableInfo.TableName);
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Error processing post request data: " + ex.Message);
+                LogError("PostRequestDataProcessing", ex.Message); // Log the error
+
                 return false;
             }
         }
 
-        private Group_Data_Model? ProcessDataForGroup1(object data, int tableNumber)
+        private static Group_Data_Model? ProcessDataForGroup1(object data, int tableNumber)
         {
             if (data == null) { return null; }
 
@@ -139,12 +140,32 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
                         break;
                 }
             }
-            catch (JsonException)
+            catch (JsonException ex)
             {
+                Console.WriteLine("Error during data conversion: " + ex.Message);
+                LogError("DataConversion", ex.Message); // Log the error
                 return null;
             }
 
             return null;
+        }
+
+        private static void LogError(string logType, string errorMessage)
+        {
+            try
+            {
+                string logFilePath = @"C:\Users\Minh\Desktop\Log_Errors.txt";
+
+                // Format the data and time for logging
+                string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {logType} Error: {errorMessage}\n";
+
+                // Append the log entry to the file
+                File.AppendAllText(logFilePath, logEntry);
+            }
+            catch (Exception logEx)
+            {
+                Console.WriteLine("Error logging error: " + logEx.Message);
+            }
         }
     }
 }
