@@ -76,7 +76,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
                     // Set command parameters based on property names
                     foreach (var propertyName in propertyNames)
                     {
-                        var propertyValue = dataType.GetProperty(propertyName)?.GetValue(group_Data_Model, null);
+                        var propertyValue = dataType.GetProperty(propertyName)?.GetValue(group_Data_Model);
                         cmd.Parameters.AddWithValue($"@{propertyName}", propertyValue);
                     }
 
