@@ -14,5 +14,9 @@
             Product_ID = string.Empty;
             Stars_Rating = 0;
         }
+        public override string ToString()
+        {
+            return $"Feedback_ID: {Feedback_ID}, User_ID: {User_ID}, Product_ID: {Product_ID}, Stars_Rating: {Stars_Rating}";
+        }
     }
 }

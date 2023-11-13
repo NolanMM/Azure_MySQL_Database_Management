@@ -7,13 +7,13 @@ namespace Server_Side.Database_Services.Output_Schema.Log_Database_Schema
     {
         private class Log_Item
         {
-            internal int Log_ID { get; set; }
-            internal string? Requests { get; set; }
-            internal DateTime Date_Access { get; set; }
-            internal string? Data_Access { get; set; }
-            internal string? Data_Content { get; set; }
-            internal string? Request_Status { get; set; }
-            internal string? Issues { get; set; }
+            public int Log_ID { get; set; }
+            public string? Requests { get; set; }
+            public DateTime Date_Access { get; set; }
+            public string? Data_Access { get; set; }
+            public string? Data_Content { get; set; }
+            public string? Request_Status { get; set; }
+            public string? Issues { get; set; }
 
         }
         // Class Attributes
@@ -28,23 +28,23 @@ namespace Server_Side.Database_Services.Output_Schema.Log_Database_Schema
             connect_String = "server=analysisreportingmoduledatabasegroup1.mysql.database.azure.com; uid=analysisreportingmodulegroup1;pwd=Conkhunglongtovai1;database=" + schemma + ";SslMode=Required";
         }
 
-        public static async Task<Output_Tables_Template> WriteLogData_ProcessAsync(string Requests_Type, DateTime Date_Access, string Data_Access, string Data_Content, string? Request_Status, string? Issues)
+        public static async Task<bool> WriteLogData_ProcessAsync(string Requests_Type, DateTime Date_Access, string Data_Access, string Data_Content, string? Request_Status, string? Issues)
         {
             analysis_and_reporting_log_data_table = new Analysis_and_reporting_log_data_table();
             if (Issues == string.Empty || Issues == null) Issues = "None";
-
+            if(Request_Status == string.Empty || Request_Status == null) Request_Status = "Succesful";
             Log_Item logItem = new Log_Item
             {
                 Requests = Requests_Type,
                 Date_Access = Date_Access,
                 Data_Access = Data_Access,
                 Data_Content = Data_Content,
-                Request_Status = Request_Status ?? "Succesful",
+                Request_Status = Request_Status,
                 Issues = Issues
             };
 
             bool request_status = await Create_Async(logItem);
-            return analysis_and_reporting_log_data_table;
+            return request_status;
         }
 
         private async static Task<bool> Create_Async(Log_Item logItem)

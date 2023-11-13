@@ -13,5 +13,9 @@
             Order_Value = 0;
             date = DateTime.MinValue;
         }
+        public override string ToString()
+        {
+            return $"Transaction_ID: {Transaction_ID}, User_ID: {User_ID}, Order_Value: {Order_Value}, date: {date}";
+        }
     }
 }

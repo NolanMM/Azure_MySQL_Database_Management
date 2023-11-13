@@ -13,5 +13,9 @@
             End_Date = new DateOnly();
             Start_Date = new DateOnly();
         }
+        public override string ToString()
+        {
+            return $"User_ID: {User_ID}, Timestamp: {Timestamp}, End_Date: {End_Date}, Start_Date: {Start_Date}";
+        }
     }
 }

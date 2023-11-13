@@ -19,5 +19,10 @@
             Start_Time = DateTime.MinValue;
             End_Time = DateTime.MinValue;
         }
+        public override string ToString()
+        {
+            return $"SessionId: {SessionId}, UserID: {UserID}, Page_Name: {Page_Name}, " +
+                   $"Page_Info: {Page_Info}, Product_ID: {Product_ID}, Start_Time: {Start_Time}, End_Time: {End_Time}";
+        }
     }
 }
