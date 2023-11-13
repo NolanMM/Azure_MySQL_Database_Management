@@ -1,6 +1,9 @@
 ﻿using Cloud_Database_Management_System.Interfaces.Database_Services_Interfaces;
 using Cloud_Database_Management_System.Models.Group_Data_Models;
 using Cloud_Database_Management_System.Services.Group_Data_Services;
+using Microsoft.AspNetCore.Http;
+using Server_Side.Database_Services.Output_Schema.Log_Database_Schema;
+using System.Text.Json;
 
 namespace Cloud_Database_Management_System.Controllers
 {
@@ -41,8 +44,28 @@ namespace Cloud_Database_Management_System.Controllers
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("Error: " + ex.Message);
-                                return false;
+                                string dataString = JsonSerializer.Serialize(data);
+                                string request_type = "POSTGroupServicesError";
+                                string Issues = ex.Message;
+                                string Request_Status = "Failed";
+                                bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(
+                                        request_type,
+                                        DateTime.Now,
+                                        TableNumber.ToString(),
+                                        dataString,
+                                        Request_Status,
+                                        Issues
+                                    );
+                                if (logStatus)
+                                {
+                                    Console.WriteLine("Error: " + ex.Message);
+                                    return false;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Error: " + ex.Message);
+                                    return false;
+                                }
                             }
                         }
                     case 2:

@@ -4,6 +4,7 @@ using Cloud_Database_Management_System.Models.Group_Data_Models;
 using Cloud_Database_Management_System.Models.Group_Data_Models.Group_1_Data_Model_Tables;
 using Cloud_Database_Management_System.Repositories.Repository_Group_1;
 using Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface;
+using Server_Side.Database_Services.Output_Schema.Log_Database_Schema;
 using System.Text.Json;
 
 namespace Cloud_Database_Management_System.Services.Group_Data_Services
@@ -62,9 +63,9 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
         {
             try
             {
-                _Group1_Data_Model = (Group_Data_Model?)ProcessDataForGroup1(data, tableNumber);
+                _Group1_Data_Model = await ProcessDataForGroup1(data, tableNumber) as Group_Data_Model;
                 Table_Group_1_Dictionary tableInfo = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.Index == tableNumber);
-
+                // Dont need to log because the error already be log on during the ProcessDataForGroup1 function
                 if (tableInfo == null || _Group1_Data_Model == null)
                 {
                     return false;
@@ -74,14 +75,34 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error processing post request data: " + ex.Message);
-                LogError("PostRequestDataProcessing", ex.Message); // Log the error
-
-                return false;
+                //Console.WriteLine("Error processing post request data: " + ex.Message);
+                //LogError("PostRequestDataProcessing", ex.Message);
+                string dataString = JsonSerializer.Serialize(data);
+                string request_type = "ProcessPostDataCorrespondGroupIDAsyncErr";
+                string Issues = ex.Message;
+                string Request_Status = "Failed";
+                bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(
+                        request_type,
+                        DateTime.Now,
+                        tableNumber.ToString(),
+                        dataString,
+                        Request_Status,
+                        Issues
+                    );
+                if (logStatus)
+                {
+                    Console.WriteLine("Error processing post request data: " + ex.Message);
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine("Error processing post request data: " + ex.Message);
+                    return false;
+                }
             }
         }
 
-        private static Group_Data_Model? ProcessDataForGroup1(object data, int tableNumber)
+        private async static Task<Group_Data_Model?> ProcessDataForGroup1(object data, int tableNumber)
         {
             if (data == null) { return null; }
 
@@ -142,11 +163,29 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             }
             catch (JsonException ex)
             {
-                Console.WriteLine("Error during data conversion: " + ex.Message);
-                LogError("DataConversion", ex.Message); // Log the error
-                return null;
+                string dataString = JsonSerializer.Serialize(data);
+                string request_type = "ProcessPostDataCorrespondGroupIDAsyncErr";
+                string Issues = ex.Message;
+                string Request_Status = "Failed";
+                bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(
+                        request_type,
+                        DateTime.Now,
+                        tableNumber.ToString(),
+                        dataString,
+                        Request_Status,
+                        Issues
+                    );
+                if (logStatus)
+                {
+                    Console.WriteLine("Error processing post request data: " + ex.Message);
+                    return null;
+                }
+                else
+                {
+                    Console.WriteLine("Error processing post request data: " + ex.Message);
+                    return null;
+                }
             }
-
             return null;
         }
 
@@ -155,11 +194,7 @@ namespace Cloud_Database_Management_System.Services.Group_Data_Services
             try
             {
                 string logFilePath = @"C:\Users\Minh\Desktop\Log_Errors.txt";
-
-                // Format the data and time for logging
                 string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {logType} Error: {errorMessage}\n";
-
-                // Append the log entry to the file
                 File.AppendAllText(logFilePath, logEntry);
             }
             catch (Exception logEx)

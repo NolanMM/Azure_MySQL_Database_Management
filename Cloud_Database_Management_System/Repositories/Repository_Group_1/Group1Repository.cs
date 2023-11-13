@@ -108,12 +108,13 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
             catch (Exception ex)
             {
                 string DataContent = "Error: " + ex.Message;
+                string request_Status = "Failed";
                 bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(
-                           "Post",
+                           "ErrorInGroup1RepositoryCreate",
                            DateTime.Now,
                            tablename,
                            DataContent,
-                           null,
+                           request_Status,
                            ex.Message
                        );
 
