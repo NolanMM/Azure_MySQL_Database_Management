@@ -1,38 +1,79 @@
 ﻿using ClientGetHttp.DatabaseServices.Services.Interface_Service;
+using ClientGetHttp.DatabaseServices.Services.Model;
+using ClientGetHttp.DatabaseServices.Services.Models.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Text.Json;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace ClientGetHttp.DatabaseServices.Services
 {
     public class PageViewTableService : IDatabaseServices
     {
-        string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/group1/1";
-        public async Task<List<object>> GetDataServiceAsync()
-        {
-            {
-                List<object>? PageViewData = new List<object>();
+        private readonly string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/group1/1";
 
-                using (HttpClient client = new HttpClient())
+        public async Task<List<Group_1_Record_Abstraction>?> GetDataServiceAsync()
+        {
+            List<Group_1_Record_Abstraction>? PageViewData = new List<Group_1_Record_Abstraction>();
+
+            using (HttpClient client = new HttpClient())
+            {
+                try
                 {
-                    try
+                    HttpResponseMessage response = await client.GetAsync(apiUrl);
+                    if (response.IsSuccessStatusCode)
                     {
-                        HttpResponseMessage response = await client.GetAsync(apiUrl);
-                        if (response.IsSuccessStatusCode)
+                        string jsonContent = await response.Content.ReadAsStringAsync();
+
+                        List<PageView>? pageViews = JsonConvert.DeserializeObject<List<PageView>?>(jsonContent);
+
+                        if (pageViews != null)
                         {
-                            string jsonContent = await response.Content.ReadAsStringAsync();
-                            PageViewData = JsonConvert.DeserializeObject<List<object>>(jsonContent);
+                            foreach (PageView pageView in pageViews)
+                            {
+                                if (ValidateDataAnnotations(pageView))
+                                {
+                                    PageViewData.Add(pageView);
+                                }
+                            }
                         }
                         else
                         {
-                            Console.WriteLine($"HTTP Error: {response.StatusCode}");
+                            Console.WriteLine($"HTTP Error: Cannot Deserialize PageView Data Object");
                         }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        Console.WriteLine($"An error occurred: {ex.Message}");
+                        Console.WriteLine($"HTTP Error: {response.StatusCode}");
                     }
                 }
-                return PageViewData;
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                }
             }
+            return PageViewData;
+        }
+
+        private static bool ValidateDataAnnotations(PageView pageView)
+        {
+            ValidationContext context = new ValidationContext(pageView, serviceProvider: null, items: null);
+            List<ValidationResult>? results = new List<ValidationResult>();
+
+            bool isValid = Validator.TryValidateObject(pageView, context, results, validateAllProperties: true);
+
+            if (!isValid)
+            {
+                foreach (ValidationResult validationResult in results)
+                {
+                    Console.WriteLine(validationResult.ErrorMessage);
+                }
+            }
+
+            return isValid;
         }
     }
 }

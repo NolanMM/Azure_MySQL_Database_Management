@@ -50,6 +50,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_D
                         User_ID = reader.GetString(1),
                         Product_ID = reader.GetString(2),
                         Stars_Rating = reader.GetDecimal(3),
+                        Date_Updated = reader.GetDateTime(4),
                     };
                     feedback_list.Add(feedback);
                 }

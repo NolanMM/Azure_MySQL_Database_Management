@@ -1,15 +1,18 @@
 ﻿using ClientGetHttp.DatabaseServices.Services.Interface_Service;
+using ClientGetHttp.DatabaseServices.Services.Model;
+using ClientGetHttp.DatabaseServices.Services.Models.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace ClientGetHttp.DatabaseServices.Services
 {
     public class SaleTransactionTableService : IDatabaseServices
     {
-        string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/group1/2";
+        private readonly string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/group1/2";
 
-        public async Task<List<object>> GetDataServiceAsync()
+        public async Task<List<Group_1_Record_Abstraction>?> GetDataServiceAsync()
         {
-            List<object>? SaleTransactionData = new List<object>();
+            List<Group_1_Record_Abstraction>? SaleTransactionData = new List<Group_1_Record_Abstraction>();
 
             using (HttpClient client = new HttpClient())
             {
@@ -19,7 +22,22 @@ namespace ClientGetHttp.DatabaseServices.Services
                     if (response.IsSuccessStatusCode)
                     {
                         string jsonContent = await response.Content.ReadAsStringAsync();
-                        SaleTransactionData = JsonConvert.DeserializeObject<List<object>>(jsonContent);
+
+                        List<SaleTransaction>? saleTransactions = JsonConvert.DeserializeObject<List<SaleTransaction>?>(jsonContent);
+                        if (saleTransactions != null)
+                        {
+                            foreach (SaleTransaction saleTransaction in saleTransactions)
+                            {
+                                if (ValidateDataAnnotations(saleTransaction))
+                                {
+                                    SaleTransactionData.Add(saleTransaction);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"HTTP Error: Cannot Deserialize SaleTransaction Data Object");
+                        }
                     }
                     else
                     {
@@ -32,6 +50,24 @@ namespace ClientGetHttp.DatabaseServices.Services
                 }
             }
             return SaleTransactionData;
+        }
+
+        private static bool ValidateDataAnnotations(SaleTransaction saleTransaction)
+        {
+            ValidationContext context = new ValidationContext(saleTransaction, serviceProvider: null, items: null);
+            List<ValidationResult>? results = new List<ValidationResult>();
+
+            bool isValid = Validator.TryValidateObject(saleTransaction, context, results, validateAllProperties: true);
+
+            if (!isValid)
+            {
+                foreach (ValidationResult validationResult in results)
+                {
+                    Console.WriteLine(validationResult.ErrorMessage);
+                }
+            }
+
+            return isValid;
         }
     }
 }

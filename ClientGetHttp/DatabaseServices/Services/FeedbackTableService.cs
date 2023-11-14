@@ -1,13 +1,23 @@
 ﻿using ClientGetHttp.DatabaseServices.Services.Interface_Service;
+using ClientGetHttp.DatabaseServices.Services.Model;
+using ClientGetHttp.DatabaseServices.Services.Models.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Text.Json;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+
 namespace ClientGetHttp.DatabaseServices.Services
 {
     public class FeedbackTableService : IDatabaseServices
     {
-        private readonly string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/group1/0";
-        public async Task<List<object>> GetDataServiceAsync()
+        private readonly string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/group1/3";
+
+        public async Task<List<Group_1_Record_Abstraction>?> GetDataServiceAsync()
         {
-            List<object>? feedbackData = new List<object>();
+            List<Group_1_Record_Abstraction>? feedbackData = new List<Group_1_Record_Abstraction>();
 
             using (HttpClient client = new HttpClient())
             {
@@ -17,7 +27,23 @@ namespace ClientGetHttp.DatabaseServices.Services
                     if (response.IsSuccessStatusCode)
                     {
                         string jsonContent = await response.Content.ReadAsStringAsync();
-                        feedbackData = JsonConvert.DeserializeObject<List<object>>(jsonContent);
+
+                        List<Feedback>? feedbackList = JsonConvert.DeserializeObject<List<Feedback>?>(jsonContent);
+
+                        if (feedbackList != null)
+                        {
+                            foreach (Feedback feedback in feedbackList)
+                            {
+                                if (ValidateDataAnnotations(feedback))
+                                {
+                                    feedbackData.Add(feedback);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"HTTP Error: Cannot Deserialize Feedback Data Object");
+                        }
                     }
                     else
                     {
@@ -31,6 +57,23 @@ namespace ClientGetHttp.DatabaseServices.Services
             }
             return feedbackData;
         }
+
+        private static bool ValidateDataAnnotations(Feedback feedback)
+        {
+            ValidationContext context = new ValidationContext(feedback, serviceProvider: null, items: null);
+            List<ValidationResult>? results = new List<ValidationResult>();
+
+            bool isValid = Validator.TryValidateObject(feedback, context, results, validateAllProperties: true);
+
+            if (!isValid)
+            {
+                foreach (ValidationResult validationResult in results)
+                {
+                    Console.WriteLine(validationResult.ErrorMessage);
+                }
+            }
+
+            return isValid;
+        }
     }
 }
-

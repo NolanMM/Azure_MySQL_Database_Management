@@ -1,5 +1,6 @@
 ﻿using ClientGetHttp.DatabaseServices.Services;
 using ClientGetHttp.DatabaseServices.Services.Interface_Service;
+using ClientGetHttp.DatabaseServices.Services.Models.Interfaces;
 
 namespace ClientGetHttp.DatabaseServices
 {
@@ -9,10 +10,10 @@ namespace ClientGetHttp.DatabaseServices
         private static readonly Random random = new Random();
         private static readonly HashSet<short> usedSessionIDs = new HashSet<short>();
         private static IDatabaseServices? databaseServices { get; set; }
-        public static async Task<List<object>> GetDataForDatabaseServiceID(int tablenumber)
+        public static async Task<List<Group_1_Record_Abstraction>?> GetDataForDatabaseServiceID(int tablenumber)
         {
             Id = GenerateUniqueSessionID();
-            List<object> processedData = new List<object>();
+            List<Group_1_Record_Abstraction>? processedData = new List<Group_1_Record_Abstraction>();
             switch (tablenumber)
             {
                 case 0:

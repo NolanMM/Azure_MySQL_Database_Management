@@ -1,20 +1,27 @@
 ﻿using ClientGetHttp.DatabaseServices.Services.Models.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace ClientGetHttp.DatabaseServices.Services.Model
 {
-    public class Feedback : Group_1_Record_Interface
+    public class Feedback : Group_1_Record_Abstraction
     {
-        public  int FeedbackId { get; set; }
-        public  string UserId { get; set; }
-        public  string ProductId { get; set; }
-        public  decimal StarRating { get; set; }
+        [Required]
+        public int Feedback_ID { get; set; }
+        [Required]
+        [MaxLength(50)]
+        public string User_ID { get; set; }
+        [Required]
+        [MaxLength(50)]
+        public string Product_ID { get; set; }
+        [Required(ErrorMessage = "Stars Rating is required")]
+        public decimal Stars_Rating { get; set; }
+        [Required(ErrorMessage = "Date is required")]
+        [DateNotDefault(ErrorMessage = "Date must be filled")]
+        public DateTime Date_Updated { get; set; }
 
-        public Feedback()
+        public override string ToString()
         {
-            FeedbackId = 0;
-            UserId = string.Empty;
-            ProductId = string.Empty;
-            StarRating = 0;
+            return $"Feedback_ID: {Feedback_ID}, User_ID: {User_ID}, Product_ID: {Product_ID}, Stars_Rating: {Stars_Rating}, Date_Updated: {Date_Updated}";
         }
     }
 }

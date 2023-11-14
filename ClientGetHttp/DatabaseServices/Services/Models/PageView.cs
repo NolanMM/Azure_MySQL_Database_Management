@@ -1,27 +1,30 @@
 ﻿using ClientGetHttp.DatabaseServices.Services.Models.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace ClientGetHttp.DatabaseServices.Services.Model
 {
-    public class PageView : Group_1_Record_Interface
+    public class PageView : Group_1_Record_Abstraction
     {
-        public string SessionId { get; set; }
-        public string UserId { get; set; }
-        public string PageUrl { get; set; }
-        public string PageInfo { get; set; }
-        public string ProductId { get; set; }
-        public DateTime DateTime { get; set; }
+        public int PageView_ID { get; set; }
+        [Required]
+        [MaxLength(45)]
+        public string Page_Name { get; set; }
+        [Required]
+        [MaxLength(45)]
+        public string Page_Info { get; set; }
+        [Required]
+        [MaxLength(45)]
+        public string Product_ID { get; set; }
+        [Required]
         public DateTime Start_Time { get; set; }
-        public DateTime End_Time { get; set; }
+        [Required]
+        [MaxLength(50)]
+        public string UserID { get; set; }
 
-        public PageView() {
-            SessionId = string.Empty;
-            UserId = string.Empty;
-            PageInfo = string.Empty;
-            PageUrl = string.Empty;
-            ProductId = string.Empty;
-            DateTime = DateTime.MinValue;
-            Start_Time = DateTime.MinValue;
-            End_Time = DateTime.MinValue;
+        public override string ToString()
+        {
+            return $"PageView_ID: {PageView_ID}, UserID: {UserID}, Page_Name: {Page_Name}, " +
+                   $"Page_Info: {Page_Info}, Product_ID: {Product_ID}, Start_Time: {Start_Time}";
         }
     }
 }

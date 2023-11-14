@@ -14,10 +14,13 @@ namespace Cloud_Database_Management_System.Models.Group_Data_Models.Group_1_Data
         public  string Product_ID { get; set; }
         [Required(ErrorMessage = "Stars Rating is required")]
         public  decimal Stars_Rating { get; set; }
+        [Required(ErrorMessage = "Date is required")]
+        [DateNotDefault(ErrorMessage = "Date must be filled")]
+        public DateTime Date_Updated { get; set; }
 
         public override string ToString()
         {
-            return $"Feedback_ID: {Feedback_ID}, User_ID: {User_ID}, Product_ID: {Product_ID}, Stars_Rating: {Stars_Rating}";
+            return $"Feedback_ID: {Feedback_ID}, User_ID: {User_ID}, Product_ID: {Product_ID}, Stars_Rating: {Stars_Rating}, Date_Updated: {Date_Updated}";
         }
     }
 }

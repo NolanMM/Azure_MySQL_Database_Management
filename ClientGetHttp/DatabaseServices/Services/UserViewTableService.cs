@@ -1,15 +1,23 @@
 ﻿using ClientGetHttp.DatabaseServices.Services.Interface_Service;
+using ClientGetHttp.DatabaseServices.Services.Model;
+using ClientGetHttp.DatabaseServices.Services.Models.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Text.Json;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace ClientGetHttp.DatabaseServices.Services
 {
     public class UserViewTableService : IDatabaseServices
     {
-        string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/group1/0";
+        private readonly string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/group1/0";
 
-        public async Task<List<object>> GetDataServiceAsync()
+        public async Task<List<Group_1_Record_Abstraction>?> GetDataServiceAsync()
         {
-            List<object>? UserViewData = new List<object>();
+            List<Group_1_Record_Abstraction>? UserViewData = new List<Group_1_Record_Abstraction>();
 
             using (HttpClient client = new HttpClient())
             {
@@ -19,7 +27,22 @@ namespace ClientGetHttp.DatabaseServices.Services
                     if (response.IsSuccessStatusCode)
                     {
                         string jsonContent = await response.Content.ReadAsStringAsync();
-                        UserViewData = JsonConvert.DeserializeObject<List<object>>(jsonContent);
+
+                        List<UserView>? userViews = JsonConvert.DeserializeObject<List<UserView>?>(jsonContent);
+                        if (userViews != null)
+                        {
+                            foreach (UserView userView in userViews)
+                            {
+                                if ((bool)ValidateDataAnnotations(userView))
+                                {
+                                    UserViewData.Add(userView);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"HTTP Error: Cannot Deserialize UserView Data Object");
+                        }
                     }
                     else
                     {
@@ -32,6 +55,24 @@ namespace ClientGetHttp.DatabaseServices.Services
                 }
             }
             return UserViewData;
+        }
+
+        private static bool ValidateDataAnnotations(UserView userView)
+        {
+            ValidationContext context = new ValidationContext(userView, serviceProvider: null, items: null);
+            List<ValidationResult>? results = new List<ValidationResult>();
+
+            bool isValid = Validator.TryValidateObject(userView, context, results, validateAllProperties: true);
+
+            if (!isValid)
+            {
+                foreach (ValidationResult validationResult in results)
+                {
+                    Console.WriteLine(validationResult.ErrorMessage);
+                }
+            }
+
+            return isValid;
         }
     }
 }
