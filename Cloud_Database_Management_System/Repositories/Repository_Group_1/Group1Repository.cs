@@ -4,10 +4,8 @@ using Cloud_Database_Management_System.Models.Group_Data_Models;
 using MySqlConnector;
 using Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface;
 using Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_Data_Tables_Class;
-using System.Buffers.Text;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
-using System.Collections;
+using System.IO;
+using Server_Side.Database_Services.Output_Schema.Log_Database_Schema;
 
 namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
 {
@@ -22,8 +20,6 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
         private List<string> table_names_list = new List<string>();
 
         private readonly string Input_schemma = "analysis_and_reporting_raw_data";
-        private readonly string Log_schemma = "analysis_and_reporting_log_data";
-
         private string connect_String { get; set; } = "";
         private string Session_ID { get; set; } = "";
         public bool Connected_Status { get; set; } = false;
@@ -55,26 +51,24 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
             try
             {
                 using MySqlConnection connection = new MySqlConnection(connect_String);
-                connection.Open();
-                Type dataType = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.TableName.Equals(tablename, StringComparison.OrdinalIgnoreCase))?.DataType;
+                await connection.OpenAsync();
 
+                Type? dataType = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type
+                    .FirstOrDefault(info => info.TableName.Equals(tablename, StringComparison.OrdinalIgnoreCase))?.DataType;
                 if (dataType == null)
                 {
                     Console.WriteLine("Table not found for the provided tablename.");
                     return false;
                 }
 
-                // Use reflection to get the property names from the data model
                 string[] propertyNames = dataType.GetProperties()
                     .Where(p => p.Name != "Id")
                     .Select(p => p.Name)
                     .ToArray();
 
-                // Create SQL query placeholders for column names and parameter names
                 string columnNames = string.Join(", ", propertyNames.Select(name => $"`{name}`"));
                 string parameterNames = string.Join(", ", propertyNames.Select(name => $"@{name}"));
 
-                // Create a new SQL command to insert data into the specified table
                 string query = $"INSERT INTO `{tablename}` ({columnNames}) VALUES ({parameterNames})";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, connection))
@@ -82,7 +76,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
                     // Set command parameters based on property names
                     foreach (var propertyName in propertyNames)
                     {
-                        var propertyValue = dataType.GetProperty(propertyName)?.GetValue(group_Data_Model, null);
+                        var propertyValue = dataType.GetProperty(propertyName)?.GetValue(group_Data_Model);
                         cmd.Parameters.AddWithValue($"@{propertyName}", propertyValue);
                     }
 
@@ -90,22 +84,10 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
 
                     if (rowsAffected > 0)
                     {
-                        string DataContent = group_Data_Model.ToString();
-                        bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(
-                            "POST",
-                            DateTime.Now,
-                            tablename,
-                            DataContent,
-                            null,
-                            null
-                        );
-
-                        if (!logStatus)
-                        {
-                            LogError(tablename, "Error writing log data to the database.");
-                            return false;
-                        }
+                        string dataContent = group_Data_Model.ToString();
+                        await LogSuccess("POST", tablename, dataContent);
                     }
+
                     await connection.CloseAsync();
 
                     return rowsAffected > 0;
@@ -113,26 +95,50 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
             }
             catch (Exception ex)
             {
-                string DataContent = "Error: " + ex.Message;
-                string request_Status = "Failed";
-                bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(
-                           "ErrorInGroup1RepositoryCreate",
-                           DateTime.Now,
-                           tablename,
-                           DataContent,
-                           request_Status,
-                           ex.Message
-                       );
-
-                if (!logStatus)
-                {
-                    LogError(tablename, "Error writing log data to the database." + " .Error: " + ex.Message);
-                    return false;
-                }
+                string dataContent = "Error: " + ex.Message;
+                string requestType = "ErrorInGroup1RepositoryCreate";
+                await LogErrorInGroup1RepositoryCreate(ex, tablename, dataContent, requestType);
                 return false;
             }
         }
-        private static void LogError(string tablename, string errorMessage)
+
+        private async Task LogSuccess(string requestType, string tablename, string dataContent)
+        {
+            string requestStatus = "Successful";
+            bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(
+                requestType,
+                DateTime.Now,
+                tablename,
+                dataContent,
+                requestStatus,
+                null
+            );
+
+            if (!logStatus)
+            {
+                Console.WriteLine("Error: Unable to log success.");
+            }
+        }
+
+        private async Task LogErrorInGroup1RepositoryCreate(Exception? ex, string tablename, string dataContent, string requestType)
+        {
+            string requestStatus = "Failed";
+            bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(
+                requestType,
+                DateTime.Now,
+                tablename,
+                dataContent,
+                requestStatus,
+                ex.Message
+            );
+
+            if (!logStatus)
+            {
+                Console.WriteLine("Error: Unable to log error.");
+            }
+        }
+
+        private static void LogError_LocalFile(string tablename, string errorMessage)
         {
             try
             {
@@ -149,36 +155,12 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
                 Console.WriteLine("Error logging error: " + logEx.Message);
             }
         }
-        private static void LogDataToFile(string tablename, Group_Data_Model group_Data_Model, DateTime created)
-        {
-            try
-            {
-                string logFilePath = @"C:\Users\Minh\Desktop\Log_Files.txt";
 
-                // Format the data and time for logging
-                string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Data written to {tablename} table: {Newtonsoft.Json.JsonConvert.SerializeObject(group_Data_Model)}\n";
-
-                // Append the log entry to the file
-                File.AppendAllText(logFilePath, logEntry);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error logging data: " + ex.Message);
-            }
-        }
-            {
-                Console.WriteLine("Error logging data: " + ex.Message);
-            }
-        }
-            {
-                Console.WriteLine("Error logging data: " + ex.Message);
-            }
-        }
         /// <summary>
         /// Read Part
         /// </summary>
 
-        public async Task<object> ReadTable(string tablename)
+        public async Task<object?> ReadTable(string tablename)
         {
             try
             {
@@ -186,15 +168,14 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
                 {
                     return null;
                 }
-                        // Create an instance of the table class
-                        Input_Tables_Template? table = tableInfo.TableType;
+
+                bool result_init_table = await Initialize_Tables();
                 if (result_init_table)
                 {
-                        // Create an instance of the table class
-                        Input_Tables_Template? table = tableInfo.TableType;
+                    var tableInfo = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type_Table_Type.Find(t => t.TableName == tablename);
+
                     if (tableInfo != null)
                     {
-                        // Create an instance of the table class
                         Input_Tables_Template? table = tableInfo.TableType;
 
                         List<object>? tableData = await table.ReadAllAsync();
@@ -238,10 +219,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
             if (Tablename_ListData_Dict.ContainsKey(tablename))
             {
                 object tableData = Tablename_ListData_Dict[tablename];
-                //if (tableData is List<object> dataAsList)
-                //{
                 return tableData;
-                //}
             }
             return null;
         }
