@@ -47,10 +47,11 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_D
                 {
                     var userView = new UserView
                     {
+                        UserView_ID = reader.GetInt32("UserView_ID"),
                         User_ID = reader.GetString("User_ID"),
-                        Start_Date = reader.GetDateOnly("Start_Date"),
-                        End_Date = reader.GetDateOnly("End_Date"),
-                        Timestamp = reader.GetDateTime("Timestamp")
+                        Product_ID = reader.GetString("Product_ID"),
+                        Time_Count = reader.GetDecimal("Time_Count"),
+                        Date_Access = reader.GetDateTime("Date_Access")
                     };
                     userViews.Add(userView);
                 }

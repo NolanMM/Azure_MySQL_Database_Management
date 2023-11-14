@@ -2,7 +2,7 @@
 
 namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface
 {
-    public interface Input_Tables_Template : Group_Data_Model
+    public interface Input_Tables_Template
     {
         bool Test_Connection_To_Table();
         void Insert();

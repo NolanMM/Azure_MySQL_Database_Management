@@ -46,13 +46,12 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_D
                 {
                     var pageView = new PageView
                     {
-                        SessionId = reader.GetString(0),
+                        PageView_ID = reader.GetInt32(0),
                         Page_Name = reader.GetString(1),
                         Page_Info = reader.GetString(2),
                         Product_ID = reader.GetString(3),
                         Start_Time = reader.GetDateTime(4),
-                        End_Time = reader.GetDateTime(5),
-                        UserID = reader.GetString(6),
+                        UserID = reader.GetString(5),
                     };
                     pageViews.Add(pageView);
                 }
