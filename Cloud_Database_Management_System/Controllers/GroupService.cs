@@ -1,83 +1,84 @@
 ﻿using Cloud_Database_Management_System.Interfaces.Database_Services_Interfaces;
 using Cloud_Database_Management_System.Models.Group_Data_Models;
 using Cloud_Database_Management_System.Services.Group_Data_Services;
+using Server_Side.Database_Services.Output_Schema.Log_Database_Schema;
+using System.Text.Json;
+using System.Text.Json;
+using System.Text.Json;
+using System.Text.Json;
+using System.Text.Json;
+using System.Text.Json;
+using System.Text.Json;
+        private DateTime _created { get; set; }
 
-namespace Cloud_Database_Management_System.Controllers
-{
-    public class GroupService
-    {
-        private IGroupService groupService;
-        private DateTime _created;
-        
+        public GroupService(DateTime? created = null)
+        public GroupService(DateTime created)
+            _created = DateTime.Now;
+        public GroupService(DateTime created)
+        public GroupService(DateTime created)
+        public GroupService(DateTime? created = null)
+        public GroupService(DateTime? created = null)
+        public GroupService(DateTime? created = null)
+        private DateTime _created { get; set; }
+
         public GroupService(DateTime created)
         {
             _created = created;
+                        _created = DateTime.Now;
         }
 
         public async Task<bool> ProcessPostDataAsync(int groupId, int TableNumber, object data)
         {
             if (groupId == 0) { return false; }
-            else {
+            else
+            {
                 switch (groupId)
-                {
-                    case 1:
-                        var Group_1_Services = new Group1Service(_created, data);
-                        if (Group_1_Services == null)
-                        {
-                            return false;
-                        }else
-                        {
-                            groupService = Group_1_Services;
-                            await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
-                            return true;
-                        }
+                            try
+                            {
+                                bool result = await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
+
+                                if (!result)
+                                {
+                                    return false;
+                                }
+
+                                return true;
+                            }
+                            catch (Exception ex)
+                            {
+                                string dataString = JsonSerializer.Serialize(data);
+                                string request_type = "POSTGroupServicesError";
+                                string Issues = ex.Message;
+                                string Request_Status = "Failed";
+                                bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(
+                                        request_type,
+                                        DateTime.Now,
+                                        TableNumber.ToString(),
+                                        dataString,
+                                        Request_Status,
+                                        Issues
+                                    );
+                                if (logStatus)
+                                {
+                                    Console.WriteLine("Error: " + ex.Message);
+                                    return false;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Error: " + ex.Message);
+                                    return false;
+                                }
+                            }
+                        var Group_5_Services = new Group5Service(_created, data);
                     case 2:
                         var Group_2_Services = new Group2Service(_created, data);
                         if (Group_2_Services == null)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            groupService = Group_2_Services;
-                            await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
-                            return true;
-                        }
-                    case 3:
-                        var Group_3_Services = new Group3Service(_created, data);
-                        if (Group_3_Services == null)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            groupService = Group_3_Services;
-                            await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
-                            return true;
-                        }
-                    case 4:
-                        var Group_4_Services = new Group4Service(_created, data);
-                        if (Group_4_Services == null)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            groupService = Group_4_Services;
-                            await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
-                            return true;
-                        }
-                    case 5:
-                        var Group_5_Services = new Group5Service(_created, data);
-                        if (Group_5_Services == null)
-                        {
-                            return false;
                         }
                         else
                         {
                             groupService = Group_5_Services;
                             await groupService.ProcessPostRequestDataCorrespondGroupIDAsync(data, TableNumber);
-                            return true;
+                            groupService = Group_2_Services;
                         }
                     case 6:
                         var Group_6_Services = new Group6Service(_created, data);
@@ -98,7 +99,7 @@ namespace Cloud_Database_Management_System.Controllers
         }
         public async Task<object> ProcessGetData(int groupId, int tableNumber)
         {
-            object result = null;
+            object? result = null;
 
             if (groupId == 0)
             {
@@ -138,7 +139,7 @@ namespace Cloud_Database_Management_System.Controllers
         }
         public async Task<object> ProcessGetAllData(int groupId)
         {
-            object result = null;
+            object? result = null;
 
             if (groupId == 0)
             {
@@ -149,7 +150,7 @@ namespace Cloud_Database_Management_System.Controllers
                 switch (groupId)
                 {
                     case 1:
-                         groupService = new Group1Service(_created);
+                        groupService = new Group1Service(_created);
                         if (groupService != null)
                         {
                             var serviceResult = await groupService.ProcessGetRequestAllDataTablesCorrespondGroupID();

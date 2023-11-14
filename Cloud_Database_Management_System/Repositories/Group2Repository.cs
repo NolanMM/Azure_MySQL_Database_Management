@@ -26,7 +26,7 @@ namespace Cloud_Database_Management_System.Repositories
             throw new NotImplementedException();
         }
 
-        public bool Test_Connection_To_Table()
+        public async Task<bool> Test_Connection_To_TableAsync()
         {
             throw new NotImplementedException();
         }
@@ -36,14 +36,11 @@ namespace Cloud_Database_Management_System.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<Dictionary<string, object>> ReadAllTables()
+        public Task<Dictionary<string, object>?> ReadAllTables()
         {
             throw new NotImplementedException();
         }
 
-        Task<object> IGroupRepository.ReadTable(string tablename)
-        {
-            throw new NotImplementedException();
-        }
+        Task<object?> IGroupRepository.ReadTable(string tablename) => throw new NotImplementedException();
     }
 }

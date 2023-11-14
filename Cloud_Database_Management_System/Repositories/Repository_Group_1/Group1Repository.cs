@@ -90,17 +90,89 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
 
                     if (rowsAffected > 0)
                     {
-                        return true;
+                        string DataContent = group_Data_Model.ToString();
+                        bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(
+                            "POST",
+                            DateTime.Now,
+                            tablename,
+                            DataContent,
+                            null,
+                            null
+                        );
+
+                        if (!logStatus)
+                        {
+                            LogError(tablename, "Error writing log data to the database.");
+                            return false;
+                        }
                     }
+                    await connection.CloseAsync();
+
+                    return rowsAffected > 0;
                 }
-                // Close the connection
-                connection.Close();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error: " + ex.Message);
+                string DataContent = "Error: " + ex.Message;
+                string request_Status = "Failed";
+                bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(
+                           "ErrorInGroup1RepositoryCreate",
+                           DateTime.Now,
+                           tablename,
+                           DataContent,
+                           request_Status,
+                           ex.Message
+                       );
+
+                if (!logStatus)
+                {
+                    LogError(tablename, "Error writing log data to the database." + " .Error: " + ex.Message);
+                    return false;
+                }
+                return false;
             }
-            return false;
+        }
+        private static void LogError(string tablename, string errorMessage)
+        {
+            try
+            {
+                string logFilePath = @"C:\Users\Minh\Desktop\Log_Errors.txt";
+
+                // Format the data and time for logging
+                string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Error writing to {tablename} table: {errorMessage}\n";
+
+                // Append the log entry to the file
+                File.AppendAllText(logFilePath, logEntry);
+            }
+            catch (Exception logEx)
+            {
+                Console.WriteLine("Error logging error: " + logEx.Message);
+            }
+        }
+        private static void LogDataToFile(string tablename, Group_Data_Model group_Data_Model, DateTime created)
+        {
+            try
+            {
+                string logFilePath = @"C:\Users\Minh\Desktop\Log_Files.txt";
+
+                // Format the data and time for logging
+                string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Data written to {tablename} table: {Newtonsoft.Json.JsonConvert.SerializeObject(group_Data_Model)}\n";
+
+                // Append the log entry to the file
+                File.AppendAllText(logFilePath, logEntry);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error logging data: " + ex.Message);
+            }
+        }
+            {
+                Console.WriteLine("Error logging data: " + ex.Message);
+            }
+        }
+            {
+                Console.WriteLine("Error logging data: " + ex.Message);
+            }
         }
         /// <summary>
         /// Read Part
@@ -114,38 +186,45 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
                 {
                     return null;
                 }
-
-                bool result_init_table = await Initialize_Tables();
+                        // Create an instance of the table class
+                        Input_Tables_Template? table = tableInfo.TableType;
                 if (result_init_table)
                 {
-                    var tableInfo = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type_Table_Type.Find(t => t.TableName == tablename);
-
+                        // Create an instance of the table class
+                        Input_Tables_Template? table = tableInfo.TableType;
                     if (tableInfo != null)
                     {
                         // Create an instance of the table class
-                        Input_Tables_Template table = tableInfo.TableType;
+                        Input_Tables_Template? table = tableInfo.TableType;
 
                         List<object>? tableData = await table.ReadAllAsync();
 
                         if (tableData != null)
                         {
                             List<List<object>> dataAsList = tableData.Select(item => new List<object> { item }).ToList();
-                            bool processingResult = Process_And_Print_Table_Data(dataAsList);
-                            object result = UpdateTableNameAndListData(tableInfo.TableName);
+                            bool processingResult = await Process_And_Print_Table_DataAsync(dataAsList);
+                            object? result = UpdateTableNameAndListData(tableInfo.TableName);
+
+                            string dataContent = "Table read operation successful";
+                            await LogSuccess("GET", tablename, dataContent);
+
                             return result;
                         }
                     }
                 }
+
                 return null;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                string dataContent = "Error: " + ex.Message;
+                string requestType = "ErrorInReadTable";
+                await LogErrorInGroup1RepositoryCreate(ex, tablename, dataContent, requestType);
                 return null;
             }
         }
 
-        private object UpdateTableNameAndListData(string tablename)
+        private object? UpdateTableNameAndListData(string tablename)
         {
             // Create a dictionary to map table names to their corresponding lists
             Dictionary<string, object> Tablename_ListData_Dict = new Dictionary<string, object>
@@ -166,12 +245,12 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
             }
             return null;
         }
-        public async Task<Dictionary<string, object>> ReadAllTables()
+        public async Task<Dictionary<string, object>?> ReadAllTables()
         {
             try
             {
-                bool result_init_table = await Initialize_Tables();
-                if (result_init_table)
+                bool resultInitTable = await Initialize_Tables();
+                if (resultInitTable)
                 {
                     All_Tables_Data_Retrive_Link_With_Session_ID = new List<(string, List<List<object>>)>();
 
@@ -184,26 +263,40 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
                             All_Tables_Data_Retrive_Link_With_Session_ID.Add((tableName, new List<List<object>> { dataAsList }));
                         }
                     }
+
                     foreach (var (tableName, dataAsList) in All_Tables_Data_Retrive_Link_With_Session_ID)
                     {
-                        Process_And_Print_Table_Data(dataAsList);
+                        Process_And_Print_Table_DataAsync(dataAsList);
                     }
-                    Dictionary<string, object> tables_list = new Dictionary<string, object>
+
+                    Dictionary<string, object> tablesList = new Dictionary<string, object>
                     {
                         { "Valid_User_Views_Table", Valid_User_Views_Table },
                         { "Website_logs_table", Website_logs_table },
                         { "SalesTransactionsTable", SalesTransactionsTable },
                         { "FeedbackTable", FeedbackTable }
                     };
-                    return tables_list;
+
+                    string dataContent = "All tables read operation successful";
+                    await LogSuccess("GET", "AllTables", dataContent);
+
+                    return tablesList;
                 }
                 else
                 {
+                    string dataContent = "Error: Initialization of tables failed";
+                    await LogErrorInGroup1RepositoryCreate(null, "AllTables", dataContent, "GET");
                     return null;
                 }
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                string dataContent = "Error: " + ex.Message;
+                await LogErrorInGroup1RepositoryCreate(ex, "AllTables", dataContent, "GET");
+                return null;
+            }
         }
+
         private async Task<bool> Initialize_Tables()
         {
             try
@@ -242,7 +335,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
             }
         }
 
-        public async Task<List<string>>? Retrieve_TableName_List()
+        public async Task<List<string>?> Retrieve_TableName_List()
         {
             string constring = "server=analysisreportingmoduledatabasegroup1.mysql.database.azure.com; uid=analysisreportingmodulegroup1;pwd=Conkhunglongtovai1;database=" + Input_schemma + ";SslMode=Required";
             try
@@ -265,11 +358,12 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                string dataContent = "Error: " + ex.Message;
+                await LogErrorInGroup1RepositoryCreate(ex, "Retrieve_TableName_List", dataContent, "GET");
                 return null;
             }
         }
-        public bool Process_And_Print_Table_Data(List<List<object>> dataAsList)
+        public async Task<bool> Process_And_Print_Table_DataAsync(List<List<object>> dataAsList)
         {
             //Console.WriteLine($"{tableName} Data:");
             try
@@ -308,7 +402,8 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                string dataContent = "Error: " + ex.Message;
+                await LogErrorInGroup1RepositoryCreate(ex, "Process_And_Print_Table_DataAsyncErr", dataContent, "DATA_PROCESS");
                 return false;
             }
         }
@@ -324,7 +419,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
             throw new NotImplementedException();
         }
 
-        public bool Test_Connection_To_Table()
+        public async Task<bool> Test_Connection_To_TableAsync()
         {
             // Safety check to make sure the connection is working properly with simple open and close
             if (connect_String != null)
@@ -339,6 +434,8 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
                 }
                 catch (Exception ex)
                 {
+                    string dataContent = "Error: " + ex.Message;
+                    await LogErrorInGroup1RepositoryCreate(ex, "Test_Connection_To_TableAsyncErr", dataContent, "CONNECTION");
                     Connected_Status = false;
                     Console.WriteLine(ex.ToString());
                     return false;

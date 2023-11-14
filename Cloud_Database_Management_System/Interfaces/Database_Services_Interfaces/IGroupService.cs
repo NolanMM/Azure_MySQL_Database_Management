@@ -4,9 +4,9 @@
     {
         Task<bool> ProcessPostRequestDataCorrespondGroupIDAsync(object data, int tablenumber);
 
-        Task<object> ProcessGetRequestDataCorrespondGroupID(int tablenumber);
+        Task<object?> ProcessGetRequestDataCorrespondGroupID(int tablenumber);
 
-        Task<object> ProcessGetRequestAllDataTablesCorrespondGroupID();
+        Task<object?> ProcessGetRequestAllDataTablesCorrespondGroupID();
 
     }
 }
