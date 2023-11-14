@@ -4,14 +4,15 @@ namespace Cloud_Database_Management_System.Models.Group_Data_Models.Group_1_Data
 {
     public class UserView : Group_1_Record_Interface
     {
+        public int UserView_ID { get; set; }
         [Required]
         public string User_ID { get; set; }
         [Required]
-        public DateOnly Start_Date { get; set; }
+        public string Product_ID { get; set; }
         [Required]
-        public DateOnly End_Date { get; set; }
+        public decimal Time_Count { get; set; }
         [Required]
-        public DateTime Timestamp { get; set; }
+        public DateTime Date_Access { get; set; }
         
         //public UserView() {
         //    User_ID = string.Empty;
@@ -21,7 +22,7 @@ namespace Cloud_Database_Management_System.Models.Group_Data_Models.Group_1_Data
         //}
         public override string ToString()
         {
-            return $"User_ID: {User_ID}, Timestamp: {Timestamp}, End_Date: {End_Date}, Start_Date: {Start_Date}";
+            return $"UserView_ID: {UserView_ID}, User_ID: {User_ID}, Product_ID: {Product_ID}, Time_Count: {Time_Count}, Date_Access: {Date_Access}";
         }
     }
 }
