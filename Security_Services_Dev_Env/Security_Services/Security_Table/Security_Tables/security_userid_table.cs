@@ -12,6 +12,7 @@ namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table.Se
         public static List<Security_Data_Model_Abtraction>? Security_UserId_Record_List = new List<Security_Data_Model_Abtraction>();
         public async Task<List<Security_Data_Model_Abtraction>?> ReadAllAsync_Security_Table()
         {
+            Security_UserId_Record_List = new List<Security_Data_Model_Abtraction>();
             try
             {
                 using MySqlConnection Connection = new MySqlConnection(connect_String);
