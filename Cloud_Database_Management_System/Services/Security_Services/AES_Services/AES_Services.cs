@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Cloud_Database_Management_System.Services.Security_Services.AES_Services
 {
-    public class AES_Services
+    public static class AES_Services_Control
     {
         private const int KeySize = 128;
 
