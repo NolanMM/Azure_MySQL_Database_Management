@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Cloud_Database_Management_System.Services.Security_Services.Hashing_Services
+namespace Security_Services_Dev_Env.Services.Security_Services.Hashing_Services
 {
     public static class Hasing_Services
     {

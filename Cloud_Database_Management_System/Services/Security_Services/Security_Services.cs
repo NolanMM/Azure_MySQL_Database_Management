@@ -1,23 +1,21 @@
-﻿using Cloud_Database_Management_System.Services.Security_Services.Hashing_Services;
-using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Data_Models;
-using Cloud_Database_Management_System.Services.Security_Services.Security_Table;
-using Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface;
+﻿using Security_Services_Dev_Env.Services.Security_Services.Hashing_Services;
+using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Data_Models;
+using Security_Services_Dev_Env.Services.Security_Services.Security_Table;
 using System.Text.RegularExpressions;
-using Cloud_Database_Management_System.Services.Security_Services.AES_Services;
+using Security_Services_Dev_Env.Services.Security_Services.AES_Services;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Json;
-using Server_Side.Database_Services.Output_Schema.Log_Database_Schema;
-using Cloud_Database_Management_System.Models.Group_Data_Models;
+using Security_Services_Dev_Env.Database_Services.Output_Schema.Log_Database_Schema;
 
-namespace Cloud_Database_Management_System.Services.Security_Services
+namespace Security_Services_Dev_Env.Services.Security_Services
 {
     public static class Security_Database_Services_Centre
     {
         private static string? connection_string { get; set; }
         private static string? Security_Schema {  get; set; }
-        public static List<Security_UserId_Record> Security_UserId_Record_List = new List<Security_UserId_Record>();
-        public static List<Security_Password_Record> Security_Password_Record_List = new List<Security_Password_Record>();
+        public static List<Security_UserId_Record> Security_UserId_Record_List;
+        public static List<Security_Password_Record> Security_Password_Record_List;
         private static readonly string user_id_table_name = "security_userid";
         private static readonly string password_table_name = "security_password";
         public async static Task<bool> SignInProcess(string username, string password)
@@ -37,15 +35,17 @@ namespace Cloud_Database_Management_System.Services.Security_Services
                     Security_UserId_Record? account_record = Security_UserId_Record_List.FirstOrDefault(info => info.User_ID == hasing_value);
                     if (account_record != null) // account exist check the password
                     {
-                        string key = hasing_value.Substring(0, 16 - CountDigits(index_temp)) + index_temp.ToString();
+                        string key = hasing_value.Substring(0, 8 - CountDigits(index_temp)) + account_record.Index_UserID.ToString();
 
                         // Encrypt the password with the key
                         string encrypted_password = AES_Services_Control.Encrypt(password, key);
-
                         Security_Password_Record? password_record = Security_Password_Record_List.FirstOrDefault(info => info.Index_pass == account_record.Index_UserID);
+
                         if (password_record != null)
-                        {
+                        {   
                             string password_in_DB = password_record.Password;
+                            string decrypted_password = AES_Services_Control.Decrypt(encrypted_password, key);
+
                             if (encrypted_password == password_in_DB) {
 
                                 isValid = true;
@@ -88,7 +88,7 @@ namespace Cloud_Database_Management_System.Services.Security_Services
                 if (await UpdateAsyncDataAsync())
                 {
                     // Retrieve the counter
-                    int index_temp = Security_UserId_Record_List.Count();
+                    int index_temp = Security_UserId_Record_List.Count() + 1;
                     // hasing rawkey and take first 16 character for the input for AES 128bit
                     string hasing_value = Hasing_Services.HashString(username);
                     // Check if hasing_value == any UserID value
@@ -96,7 +96,7 @@ namespace Cloud_Database_Management_System.Services.Security_Services
                     if (account_record == null)
                     {
                         // Create the key for the string
-                        string key = hasing_value.Substring(0, 16 - CountDigits(index_temp)) + index_temp.ToString();
+                        string key = hasing_value.Substring(0, 8 - CountDigits(index_temp)) + index_temp.ToString();
                         // Encrypt the password with the key
                         string encrypted_password = AES_Services_Control.Encrypt(password, key);
 
@@ -159,6 +159,8 @@ namespace Cloud_Database_Management_System.Services.Security_Services
         }
         private static async Task<bool> UpdateAsyncDataAsync()
         {
+            Security_UserId_Record_List = new List<Security_UserId_Record>();
+            Security_Password_Record_List = new List<Security_Password_Record>();
             try
             {
                 List<Security_Data_Model_Abtraction>? userID_List = await Security_Table_DB_Control.ReadAllAsyncTablename(user_id_table_name);

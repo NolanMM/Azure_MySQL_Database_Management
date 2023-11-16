@@ -1,10 +1,7 @@
-﻿using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Data_Models;
-using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Security_Tables;
-using Microsoft.AspNetCore.JsonPatch.Operations;
-using MySqlConnector;
-using System.Diagnostics.Metrics;
+﻿using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Data_Models;
+using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Security_Tables;
 
-namespace Cloud_Database_Management_System.Services.Security_Services.Security_Table
+namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table
 {
     public static class Security_Table_DB_Control
     {
@@ -15,6 +12,7 @@ namespace Cloud_Database_Management_System.Services.Security_Services.Security_T
 
         public static async Task<List<Security_Data_Model_Abtraction>?> ReadAllAsyncTablename(string tablename)
         {
+            Security_Data_Model_Abtraction_List = new List<Security_Data_Model_Abtraction>();
             try
             {
                 switch (tablename)

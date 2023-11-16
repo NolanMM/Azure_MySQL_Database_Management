@@ -1,4 +1,4 @@
-﻿namespace Cloud_Database_Management_System.Services.Security_Services.Security_Table.Data_Models
+﻿namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table.Data_Models
 {
     public abstract class Security_Data_Model_Abtraction
     {

@@ -1,6 +1,6 @@
-﻿using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Data_Models;
+﻿using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Data_Models;
 
-namespace Cloud_Database_Management_System.Services.Security_Services.Security_Table.Security_Tables.Security_Tables_Interface
+namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table.Security_Tables.Security_Tables_Interface
 {
     public interface Security_Table_Interface
     {

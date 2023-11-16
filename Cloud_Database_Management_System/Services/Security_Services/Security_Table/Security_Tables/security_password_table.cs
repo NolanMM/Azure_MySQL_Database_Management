@@ -1,8 +1,8 @@
-﻿using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Data_Models;
-using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Security_Tables.Security_Tables_Interface;
+﻿using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Data_Models;
+using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Security_Tables.Security_Tables_Interface;
 using MySqlConnector;
 
-namespace Cloud_Database_Management_System.Services.Security_Services.Security_Table.Security_Tables
+namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table.Security_Tables
 {
     public class security_password_table : Security_Table_Interface
     {
@@ -12,6 +12,7 @@ namespace Cloud_Database_Management_System.Services.Security_Services.Security_T
         public static List<Security_Data_Model_Abtraction>? Security_Password_Record_List = new List<Security_Data_Model_Abtraction>();
         public async Task<List<Security_Data_Model_Abtraction>?> ReadAllAsync_Security_Table()
         {
+            Security_Password_Record_List = new List<Security_Data_Model_Abtraction>();
             try
             {
                 using MySqlConnection Connection = new MySqlConnection(connect_String);
