@@ -1,14 +1,14 @@
-﻿using Security_Services_Dev_Env.Services.Security_Services.Hashing_Services;
-using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Data_Models;
-using Security_Services_Dev_Env.Services.Security_Services.Security_Table;
+﻿using Cloud_Database_Management_System.Services.Security_Services.Hashing_Services;
+using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Data_Models;
+using Cloud_Database_Management_System.Services.Security_Services.Security_Table;
 using System.Text.RegularExpressions;
-using Security_Services_Dev_Env.Services.Security_Services.AES_Services;
+using Cloud_Database_Management_System.Services.Security_Services.AES_Services;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Json;
-using Security_Services_Dev_Env.Database_Services.Output_Schema.Log_Database_Schema;
+using Server_Side.Database_Services.Output_Schema.Log_Database_Schema;
 
-namespace Security_Services_Dev_Env.Services.Security_Services
+namespace Cloud_Database_Management_System.Services.Security_Services
 {
     public static class Security_Database_Services_Centre
     {

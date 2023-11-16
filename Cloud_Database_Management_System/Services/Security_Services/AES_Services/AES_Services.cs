@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Security_Services_Dev_Env.Services.Security_Services.AES_Services
+namespace Cloud_Database_Management_System.Services.Security_Services.AES_Services
 {
     public static class AES_Services_Control
     {

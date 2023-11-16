@@ -1,7 +1,7 @@
-﻿using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Data_Models;
-using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Security_Tables;
+﻿using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Data_Models;
+using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Security_Tables;
 
-namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table
+namespace Cloud_Database_Management_System.Services.Security_Services.Security_Table
 {
     public static class Security_Table_DB_Control
     {
