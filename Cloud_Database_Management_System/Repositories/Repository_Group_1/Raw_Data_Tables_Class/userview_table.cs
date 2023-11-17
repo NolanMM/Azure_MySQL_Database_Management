@@ -22,7 +22,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_D
             Created_Status = true;
             Connected_Status = false;
             Session_ID = session_ID;
-            connect_String = "server=analysisreportingmoduledatabasegroup1.mysql.database.azure.com; uid=analysisreportingmodulegroup1;pwd=Conkhunglongtovai1;database=" + schemma + ";SslMode=Required";
+            connect_String = "server=databasesystemmodule1.mysql.database.azure.com; uid=nolanmdatabasemanager;pwd=Conkhunglongtovai1;database=" + schemma + ";SslMode=Required";
         }
 
         public static Input_Tables_Template SetUp(string session_ID)

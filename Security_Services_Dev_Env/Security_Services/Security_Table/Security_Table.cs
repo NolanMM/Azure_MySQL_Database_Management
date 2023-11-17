@@ -1,4 +1,5 @@
-﻿using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Data_Models;
+﻿using Security_Services_Dev_Env.Security_Services.Security_Table.Security_Tables;
+using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Data_Models;
 using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Security_Tables;
 
 namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table
@@ -7,6 +8,7 @@ namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table
     {
         private static readonly string user_id_table_name = "security_userid";
         private static readonly string password_table_name = "security_password";
+        private static readonly string otp_table_name = "otp_table";
 
         public static List<Security_Data_Model_Abtraction>? Security_Data_Model_Abtraction_List = new List<Security_Data_Model_Abtraction>();
 
@@ -21,10 +23,13 @@ namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table
                         security_userid_table security_Userid_Table = new security_userid_table();
                         Security_Data_Model_Abtraction_List = await security_Userid_Table.ReadAllAsync_Security_Table();
                         return Security_Data_Model_Abtraction_List;
-
                     case var _ when tablename == password_table_name:
                         security_password_table security_Password_Table = new security_password_table();
                         Security_Data_Model_Abtraction_List = await security_Password_Table.ReadAllAsync_Security_Table();
+                        return Security_Data_Model_Abtraction_List;
+                    case var _ when tablename == otp_table_name:
+                        security_otp_table security_otp_Table = new security_otp_table();
+                        Security_Data_Model_Abtraction_List = await security_otp_Table.ReadAllAsync_Security_Table();
                         return Security_Data_Model_Abtraction_List;
                     default:
                         return null;
@@ -49,7 +54,9 @@ namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table
                     case var _ when tablename == password_table_name:
                         security_password_table security_Password_Table = new security_password_table();
                         return await security_Password_Table.CreateAsync_Security_Table(dataModel, password_table_name);
-
+                    case var _ when tablename == otp_table_name:
+                        security_otp_table security_otp_Table = new security_otp_table();
+                        return await security_otp_Table.CreateAsync_Security_Table(dataModel, otp_table_name);
                     default:
                         return false;
                 }
@@ -62,7 +69,6 @@ namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table
         }
         public static bool Test_Connection_To_Table(string tablename)
         {
-
             try
             {
                 switch (tablename)
@@ -74,7 +80,9 @@ namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table
                     case var _ when tablename == password_table_name:
                         security_password_table security_Password_Table = new security_password_table();
                         return security_Password_Table.Test_Connection_To_Table();
-
+                    case var _ when tablename == otp_table_name:
+                        security_otp_table security_otp_Table = new security_otp_table();
+                        return security_otp_Table.Test_Connection_To_Table();
                     default:
                         return false;
                 }

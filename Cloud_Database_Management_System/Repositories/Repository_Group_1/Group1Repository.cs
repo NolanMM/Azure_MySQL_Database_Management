@@ -40,7 +40,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
 
         public Group1Repository(DateTime created)
         {
-            connect_String = "server=analysisreportingmoduledatabasegroup1.mysql.database.azure.com; uid=analysisreportingmodulegroup1;pwd=Conkhunglongtovai1;database=" + Input_schemma + ";SslMode=Required";
+            connect_String = "server=databasesystemmodule1.mysql.database.azure.com; uid=nolanmdatabasemanager;pwd=Conkhunglongtovai1;database=" + Input_schemma + ";SslMode=Required";
             _created = created;
             Connected_Status = false;
             Session_ID = GenerateUniqueKey();
@@ -315,7 +315,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1
 
         public async Task<List<string>?> Retrieve_TableName_List()
         {
-            string constring = "server=analysisreportingmoduledatabasegroup1.mysql.database.azure.com; uid=analysisreportingmodulegroup1;pwd=Conkhunglongtovai1;database=" + Input_schemma + ";SslMode=Required";
+            string constring = "server=databasesystemmodule1.mysql.database.azure.com; uid=nolanmdatabasemanager;pwd=Conkhunglongtovai1;database=" + Input_schemma + ";SslMode=Required";
             try
             {
                 MySqlConnection Connection = new MySqlConnection(constring);

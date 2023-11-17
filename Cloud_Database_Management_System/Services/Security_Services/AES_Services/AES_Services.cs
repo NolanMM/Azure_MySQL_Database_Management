@@ -1,49 +1,76 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Cloud_Database_Management_System.Services.Security_Services.AES_Services
 {
     public static class AES_Services_Control
     {
-        private const int KeySize = 128;
+        private static readonly string privatekey = "ByNolanM";
 
-        public static string Encrypt(string password, string key)
+        public static string Encrypt(string str, string public_key)
         {
-            using AesCryptoServiceProvider aesAlg = new AesCryptoServiceProvider();
-            aesAlg.KeySize = KeySize;
-            aesAlg.Key = Encoding.UTF8.GetBytes(key);
-
-            aesAlg.GenerateIV();
-
-            ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-
-            using MemoryStream msEncrypt = new MemoryStream();
-            using CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-            using StreamWriter swEncrypt = new StreamWriter(csEncrypt);
-
-            swEncrypt.Write(password);
-
-            return Convert.ToBase64String(aesAlg.IV.Concat(msEncrypt.ToArray()).ToArray());
+            try
+            {
+                string textToEncrypt = str;
+                string ToReturn = "";
+                string publickey = public_key;
+                byte[] secretkeyByte = { };
+                secretkeyByte = System.Text.Encoding.UTF8.GetBytes(privatekey);
+                byte[] publickeybyte = { };
+                publickeybyte = System.Text.Encoding.UTF8.GetBytes(publickey);
+                MemoryStream ms = null;
+                CryptoStream cs = null;
+                byte[] inputbyteArray = System.Text.Encoding.UTF8.GetBytes(textToEncrypt);
+                using (DESCryptoServiceProvider des = new DESCryptoServiceProvider())
+                {
+                    ms = new MemoryStream();
+                    cs = new CryptoStream(ms, des.CreateEncryptor(publickeybyte, secretkeyByte), CryptoStreamMode.Write);
+                    cs.Write(inputbyteArray, 0, inputbyteArray.Length);
+                    cs.FlushFinalBlock();
+                    ToReturn = Convert.ToBase64String(ms.ToArray());
+                }
+                return ToReturn;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
+            }
         }
 
-        public static string Decrypt(string password, string key)
+        public static string Decrypt(string str, string public_key)
         {
-            using AesCryptoServiceProvider aesAlg = new AesCryptoServiceProvider();
-            aesAlg.KeySize = KeySize;
-            aesAlg.Key = Encoding.UTF8.GetBytes(key);
-
-            byte[] iv = Convert.FromBase64String(password).Take(16).ToArray();
-            byte[] cipherBytes = Convert.FromBase64String(password).Skip(16).ToArray();
-
-            aesAlg.IV = iv;
-
-            ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
-            using MemoryStream msDecrypt = new MemoryStream(cipherBytes);
-            using CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
-            using StreamReader srDecrypt = new StreamReader(csDecrypt);
-
-            return srDecrypt.ReadToEnd();
+            try
+            {
+                string textToDecrypt = str;
+                string ToReturn = "";
+                string publickey = public_key;
+                byte[] privatekeyByte = { };
+                privatekeyByte = System.Text.Encoding.UTF8.GetBytes(privatekey);
+                byte[] publickeybyte = { };
+                publickeybyte = System.Text.Encoding.UTF8.GetBytes(publickey);
+                MemoryStream ms = null;
+                CryptoStream cs = null;
+                byte[] inputbyteArray = new byte[textToDecrypt.Replace(" ", "+").Length];
+                inputbyteArray = Convert.FromBase64String(textToDecrypt.Replace(" ", "+"));
+                using (DESCryptoServiceProvider des = new DESCryptoServiceProvider())
+                {
+                    ms = new MemoryStream();
+                    cs = new CryptoStream(ms, des.CreateDecryptor(publickeybyte, privatekeyByte), CryptoStreamMode.Write);
+                    cs.Write(inputbyteArray, 0, inputbyteArray.Length);
+                    cs.FlushFinalBlock();
+                    Encoding encoding = Encoding.UTF8;
+                    ToReturn = encoding.GetString(ms.ToArray());
+                }
+                //Console.WriteLine(ToReturn);
+                return ToReturn;
+            }
+            catch (Exception ae)
+            {
+                throw new Exception(ae.Message, ae.InnerException);
+            }
         }
     }
 }

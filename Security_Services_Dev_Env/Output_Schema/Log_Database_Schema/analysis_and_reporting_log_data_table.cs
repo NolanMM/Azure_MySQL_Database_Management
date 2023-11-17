@@ -25,7 +25,7 @@ namespace Security_Services_Dev_Env.Database_Services.Output_Schema.Log_Database
         private List<Log_Item> Log_Item_List = new List<Log_Item>();
         private Analysis_and_reporting_log_data_table()
         {
-            connect_String = "server=analysisreportingmoduledatabasegroup1.mysql.database.azure.com; uid=analysisreportingmodulegroup1;pwd=Conkhunglongtovai1;database=" + schemma + ";SslMode=Required";
+            connect_String = "server=databasesystemmodule1.mysql.database.azure.com; uid=nolanmdatabasemanager;pwd=Conkhunglongtovai1;database=" + schemma + ";SslMode=Required";
         }
 
         public static async Task<bool> WriteLogData_ProcessAsync(string Requests_Type, DateTime Date_Access, string Data_Access, string Data_Content, string? Request_Status, string? Issues)
