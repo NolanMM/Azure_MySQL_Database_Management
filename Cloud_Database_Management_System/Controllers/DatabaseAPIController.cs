@@ -2,6 +2,10 @@
 using Server_Side.Database_Services.Output_Schema.Log_Database_Schema;
 using System.Text.Json;
 using Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface;
+using Cloud_Database_Management_System.Security_Services.Security_Table.Data_Models;
+using Cloud_Database_Management_System.Services.Security_Services;
+using System.Numerics;
+using System.Threading.Tasks;
 
 namespace Cloud_Database_Management_System.Controllers
 {
@@ -15,6 +19,135 @@ namespace Cloud_Database_Management_System.Controllers
         {
             _groupService = groupService ?? throw new ArgumentNullException(nameof(groupService));
         }
+
+        [HttpGet("MainPage")]
+        public async Task<IActionResult> PrintInstructionUsingDatabaseService()
+        {
+            return Ok(true);
+        }
+
+        [HttpPost("Login/{username}/{password}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Login(string username, string password)
+        {
+            try
+            {
+                bool signInResult = await LoginProcess(username, password);
+
+                if (signInResult)
+                {
+                    return Ok("Sign In successful!");
+                }
+                else
+                {
+                    return BadRequest("Sign In failed. Please check your credentials.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+            }
+        }
+
+        private async Task<bool> LoginProcess(string username, string password)
+        {
+            if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrEmpty(password))
+            {
+                return await Security_Database_Services_Centre.SignInProcess(username, password);
+            }
+
+            return false;
+        }
+
+        [HttpGet("Register/Help")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        private async Task<IActionResult> SignUpRequestInstructionProcess()
+        {
+            return Ok();
+        }
+
+
+        [HttpPost("Register/{registerUsername}/{registerEmail}/{registerPassword}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> SignUpRequestProcess(string? registerUsername, string? registerEmail, string? registerPassword)
+        {
+            try
+            {
+                // Check if input parameters are valid
+                if (!string.IsNullOrWhiteSpace(registerUsername) && !string.IsNullOrEmpty(registerEmail) && !string.IsNullOrEmpty(registerPassword))
+                {
+                    // Begin the sign-up process
+                    OTP_Record? OTP_record_created = await Security_Database_Services_Centre.SignUpProcess_Begin(registerUsername, registerEmail, registerPassword);
+
+                    if (OTP_record_created != null)
+                    {
+                        // Fire and forget the background task
+                        _ = Task.Run(async () =>
+                        {
+                            bool result = await HandleOTPRecordCreationAsync(OTP_record_created);
+                        });
+
+                        return Ok("Registration process started. Check your email for OTP. Your OTP ID is: " + OTP_record_created.OTP_ID);
+                    }
+                    else
+                    {
+                        return BadRequest("Registration failed. Please check your input.");
+                    }
+                }
+                else
+                {
+                    return BadRequest("Invalid input parameters.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+            }
+        }
+
+        private async Task<bool> HandleOTPRecordCreationAsync(OTP_Record otpRecord)
+        {
+            return await Security_Database_Services_Centre.OTP_Table_Record_Process(otpRecord);
+        }
+
+        [HttpPost("RegisterVerifyOTP/{OTP_CODE_ID}/{OTP_CODE}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RegisterVerifyOTP(string OTP_CODE_ID, string OTP_CODE)
+        {
+            try
+            {
+                bool registrationSuccess = await VerifyRegistration(OTP_CODE_ID, OTP_CODE);
+
+                if (registrationSuccess)
+                {
+                    Console.WriteLine("Register Account successful!");
+                    return Ok("Register Account successful!");
+                }
+
+                Console.WriteLine("Registration failed. Please check your input.");
+                return BadRequest("Registration failed. Please check your input.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+            }
+        }
+
+        private async Task<bool> VerifyRegistration(string OTP_CODE_ID, string OTP_CODE)
+        {
+            if (!string.IsNullOrWhiteSpace(OTP_CODE_ID) && !string.IsNullOrEmpty(OTP_CODE))
+            {
+                return await Security_Database_Services_Centre.SignUpProcessFinish(OTP_CODE_ID, OTP_CODE);
+            }
+
+            return false;
+        }
+
 
         [HttpPost("POST/group{groupId}/{tableNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

@@ -1,18 +1,16 @@
 ﻿using MySqlConnector;
-using Cloud_Database_Management_System.Security_Services.Security_Table.Data_Models;
-using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Data_Models;
-using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Security_Tables.Security_Tables_Interface;
+using OTP_Centre.DataModel;
 
-namespace Cloud_Database_Management_System.Security_Services.Security_Table.Security_Tables
+namespace OTP_Centre.Tables
 {
-    public class security_otp_table : Security_Table_Interface
+    public class security_otp_table
     {
         private static readonly string schemma = "analysis_and_reporting_security";
         private static readonly string otp_table_name = "otp_table";
         private static readonly int Time_Delay_In_Mins = 1;
         private static string connect_String { get; set; } = "server=databasesystemmodule1.mysql.database.azure.com; uid=nolanmdatabasemanager;pwd=Conkhunglongtovai1;database=" + schemma + ";SslMode=Required";
-        public static List<Security_Data_Model_Abtraction>? Security_OTP_Record_List = new List<Security_Data_Model_Abtraction>();
-        public async Task<bool> CreateAsync_Security_Table(Security_Data_Model_Abtraction dataModel, string tableName)
+        public static List<OTP_Record>? Security_OTP_Record_List = new List<OTP_Record>();
+        public async Task<bool> CreateAsync_Security_Table(OTP_Record dataModel, string tableName)
         {
             try
             {
@@ -86,9 +84,9 @@ namespace Cloud_Database_Management_System.Security_Services.Security_Table.Secu
 
 
 
-        public async Task<List<Security_Data_Model_Abtraction>?> ReadAllAsync_Security_Table()
+        public async Task<List<OTP_Record>?> ReadAllAsync_Security_Table()
         {
-            Security_OTP_Record_List = new List<Security_Data_Model_Abtraction>();
+            Security_OTP_Record_List = new List<OTP_Record>();
             try
             {
                 using MySqlConnection Connection = new MySqlConnection(connect_String);
@@ -148,7 +146,7 @@ namespace Cloud_Database_Management_System.Security_Services.Security_Table.Secu
                 return false;
             }
         }
-        
+
         private static async Task<bool> DeleteExpiredOTPRecordsAsync_Process(string? otpId, MySqlConnection connection)
         {
             if (!string.IsNullOrEmpty(otpId))
@@ -173,7 +171,7 @@ namespace Cloud_Database_Management_System.Security_Services.Security_Table.Secu
             }
             else
             {
-                return false;  
+                return false;
             }
         }
         public static async Task<bool> DeletebyOTPID(string? OTP_ID)
@@ -202,3 +200,4 @@ namespace Cloud_Database_Management_System.Security_Services.Security_Table.Secu
         }
     }
 }
+
