@@ -8,7 +8,7 @@ namespace Security_Services_Dev_Env.Services.Security_Services.Security_Table.Se
     {
         private static readonly string schemma = "analysis_and_reporting_security";
         private static readonly string user_id_table_name = "security_userid";
-        private static string connect_String { get; set; } = "server=analysisreportingmoduledatabasegroup1.mysql.database.azure.com; uid=analysisreportingmodulegroup1;pwd=Conkhunglongtovai1;database=" + schemma + ";SslMode=Required";
+        private static string connect_String { get; set; } = "server=databasesystemmodule1.mysql.database.azure.com; uid=nolanmdatabasemanager;pwd=Conkhunglongtovai1;database=" + schemma + ";SslMode=Required";
         public static List<Security_Data_Model_Abtraction>? Security_UserId_Record_List = new List<Security_Data_Model_Abtraction>();
         public async Task<List<Security_Data_Model_Abtraction>?> ReadAllAsync_Security_Table()
         {

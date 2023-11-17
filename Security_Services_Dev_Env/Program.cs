@@ -14,7 +14,7 @@ class Program
             Console.WriteLine("4. Exit");
 
             Console.Write("Enter your choice (1, 2, 3 or 4): ");
-            string choice = Console.ReadLine();
+            string? choice = Console.ReadLine();
 
             switch (choice)
             {
@@ -57,7 +57,14 @@ class Program
                             Console.WriteLine("Your Register ID to Confirm the OTP code is: " + OTP_record_created.OTP_ID);
 
                             // Start the OTP_Table_Record_Process in a separate thread without waiting for its result
-                            Task.Run(() => Security_Database_Services_Centre.OTP_Table_Record_Process(OTP_record_created));
+                            //Task.Run(() => Security_Database_Services_Centre.OTP_Table_Record_Process(OTP_record_created));
+                            if(await Security_Database_Services_Centre.OTP_Table_Record_Process(OTP_record_created))
+                            {
+                                Console.WriteLine("Time Out");
+                            }else
+                            {
+                                Console.WriteLine("Error");
+                            }
                         }
                         else
                         {

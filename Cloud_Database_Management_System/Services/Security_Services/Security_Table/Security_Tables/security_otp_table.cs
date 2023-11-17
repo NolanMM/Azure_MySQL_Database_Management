@@ -1,9 +1,9 @@
 ﻿using MySqlConnector;
-using Security_Services_Dev_Env.Security_Services.Security_Table.Data_Models;
-using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Data_Models;
-using Security_Services_Dev_Env.Services.Security_Services.Security_Table.Security_Tables.Security_Tables_Interface;
+using Cloud_Database_Management_System.Security_Services.Security_Table.Data_Models;
+using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Data_Models;
+using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Security_Tables.Security_Tables_Interface;
 
-namespace Security_Services_Dev_Env.Security_Services.Security_Table.Security_Tables
+namespace Cloud_Database_Management_System.Security_Services.Security_Table.Security_Tables
 {
     public class security_otp_table : Security_Table_Interface
     {

@@ -6,6 +6,8 @@ using Cloud_Database_Management_System.Services.Security_Services.AES_Services;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Json;
+using Cloud_Database_Management_System.Security_Services.OTP_Services;
+using Cloud_Database_Management_System.Security_Services.Security_Table.Data_Models;
 using Server_Side.Database_Services.Output_Schema.Log_Database_Schema;
 
 namespace Cloud_Database_Management_System.Services.Security_Services
@@ -13,11 +15,13 @@ namespace Cloud_Database_Management_System.Services.Security_Services
     public static class Security_Database_Services_Centre
     {
         private static string? connection_string { get; set; }
-        private static string? Security_Schema {  get; set; }
-        public static List<Security_UserId_Record> Security_UserId_Record_List;
-        public static List<Security_Password_Record> Security_Password_Record_List;
+        private static string? Security_Schema { get; set; }
+        public static List<Security_UserId_Record> Security_UserId_Record_List = new List<Security_UserId_Record>();
+        public static List<Security_Password_Record> Security_Password_Record_List = new List<Security_Password_Record>();
+        public static List<OTP_Record> Security_OTP_Record_List = new List<OTP_Record>();
         private static readonly string user_id_table_name = "security_userid";
         private static readonly string password_table_name = "security_password";
+        private static readonly string otp_table_name = "otp_table";
         public async static Task<bool> SignInProcess(string username, string password)
         {
             bool isValid = false;
@@ -42,7 +46,7 @@ namespace Cloud_Database_Management_System.Services.Security_Services
                         Security_Password_Record? password_record = Security_Password_Record_List.FirstOrDefault(info => info.Index_pass == account_record.Index_UserID);
 
                         if (password_record != null)
-                        {   
+                        {
                             string password_in_DB = password_record.Password;
                             string decrypted_password = AES_Services_Control.Decrypt(encrypted_password, key);
 
@@ -57,7 +61,7 @@ namespace Cloud_Database_Management_System.Services.Security_Services
                                 return isValid;
                             }
 
-                        }else
+                        } else
                         {
                             isValid = false;    // Error with the index inside the Security table
                             return isValid;
@@ -78,9 +82,9 @@ namespace Cloud_Database_Management_System.Services.Security_Services
             isValid = false;        // Fail checking input
             return isValid;
         }
-        public async static Task<bool> SignUpProcess(string username,string email, string password)
+        public async static Task<OTP_Record?> SignUpProcess_Begin(string username, string email, string password)
         {
-            bool isValid = false;
+            OTP_Record? result = null;
 
             // Check for the input first no special character
             if (Checking_Input_Register(username, email, password))
@@ -105,12 +109,12 @@ namespace Cloud_Database_Management_System.Services.Security_Services
                         {
                             Index_UserID = index_temp,
                             User_ID = hasing_value,
-                            Email_Address = email,
+                            Email_Address = email
                         };
                         Security_Password_Record Security_password_Record = new Security_Password_Record
                         {
                             Index_pass = index_temp,
-                            Password = encrypted_password,
+                            Password = encrypted_password
                         };
 
                         // Check the input for database
@@ -120,42 +124,155 @@ namespace Cloud_Database_Management_System.Services.Security_Services
                         {
                             try
                             {
-                                // Write the data to the database
-                                bool create_accound_ID = await Security_Table_DB_Control.CreateAsyncTablename(security_UserId_Record, user_id_table_name);
-                                bool create_password_ID = await Security_Table_DB_Control.CreateAsyncTablename(Security_password_Record, password_table_name);
+                                // Generate OTP code by hasing the email of user this is the token key to sign in faster
+                                string raw_OTP_code = Hasing_Services.HashString(email);
+                                string OTP_code = raw_OTP_code.Substring(0, 16);
+                                string OTP_ID = raw_OTP_code.Substring(16, 20);
 
-                                if (create_accound_ID && create_password_ID)
+                                // Send the OTP to the user make sign up request
+                                bool isSend = await OTP_Module_Services.Send_OTP_CodeAsync(OTP_code, email);
+                                // if sent successful
+                                if (isSend)
                                 {
-                                    isValid = true;
-                                    return isValid;
+                                    // Create a record in the otp table to store the otp code to validate later
+                                    OTP_Record OTP_record = new OTP_Record
+                                    {
+                                        OTP_Index = index_temp,
+                                        OTP_Code = OTP_code,
+                                        User_ID = hasing_value,
+                                        Email_Address = email,
+                                        Password = encrypted_password,
+                                        Time_Created = DateTime.Now,
+                                        OTP_ID = OTP_ID
+                                    };
+                                    // Write the data to the data table
+                                    bool Check_OTP_Input_Valid = await ValidateDataAnnotations(OTP_record, otp_table_name);
+                                    if (Check_OTP_Input_Valid)
+                                    {
+                                        result = OTP_record;
+                                        return result;
+                                    }
+                                    else
+                                    {
+                                        return null;
+                                    }
+                                } else
+                                {
+                                    return null;
                                 }
+                                
                             }
                             catch (Exception ex)
                             {
                                 Console.WriteLine(ex.ToString());
-                                isValid = false;
-                                return isValid;   // Write Error
+                                return null;   // Write Error
                             }
                         }
                         else
                         {
-                            isValid = false;
-                            return isValid; // In valid input for length
+                            return null; // In valid input for length
                         }
                     }
                     else   // else account has been created before -> return false
                     {
-                        isValid = false;
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return null;
+        }
+        public async static Task<bool> OTP_Table_Record_Process(OTP_Record? OTP_record)
+        {
+            if(OTP_record == null)
+            {
+                return false;
+            }
+            bool create_otp_Record = await Security_Table_DB_Control.CreateAsyncTablename(OTP_record, otp_table_name);
+            return create_otp_Record;
+        }
+        public async static Task<bool> SignUpProcessFinish(string OTP_ID, string OTP_code)
+        {
+            bool isValid = false;
+            // Checking the input 
+            bool valid_OTP_ID = IsInvalidInput(OTP_ID, "OTP_ID");
+            bool valid_OTP_Code = IsInvalidInput(OTP_code, "OTP_CODE");
+            if(valid_OTP_Code &&  valid_OTP_ID)
+            {
+                // Update the OTP list
+                if(await UpdateAsyncDataOTPAsync())
+                {
+                    OTP_Record? OTP_record = Security_OTP_Record_List.FirstOrDefault(info => info.OTP_ID == OTP_ID);
+                    if(OTP_record != null)
+                    {
+                        // Check for the OTP_code
+                        if(OTP_record.OTP_Code == OTP_code)
+                        {
+                            // Create valid account to write to database
+                            Security_UserId_Record security_UserId_Record = new Security_UserId_Record
+                            {
+                                Index_UserID = OTP_record.OTP_Index,
+                                User_ID = OTP_record.User_ID,
+                                Email_Address = OTP_record.Email_Address
+                            };
+                            Security_Password_Record Security_password_Record = new Security_Password_Record
+                            {
+                                Index_pass = OTP_record.OTP_Index,
+                                Password = OTP_record.Password
+                            };
+
+                            //Write the data to the database
+                            bool create_accound_ID = await Security_Table_DB_Control.CreateAsyncTablename(security_UserId_Record, user_id_table_name);
+                            bool create_password_ID = await Security_Table_DB_Control.CreateAsyncTablename(Security_password_Record, password_table_name);
+
+                            if (create_accound_ID && create_password_ID)
+                            {
+                                isValid = true;
+                                return isValid;
+                            }
+                            else
+                            {
+                                isValid = false;
+                                return isValid;
+                            }
+                        }else
+                        {
+                            isValid = false;
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        isValid = false;    // Wrong OTP_ID // Exceed Time - 5 mins
                         return isValid;
                     }
                 }
                 else
                 {
-                    isValid = false;        // Update value false
+                    isValid = false;    // Failed to update log list
                     return isValid;
                 }
             }
-            return isValid;
+            return isValid;     // Failed for the input
+        }
+
+        private static async Task<bool> UpdateAsyncDataOTPAsync()
+        {
+            Security_OTP_Record_List = new List<OTP_Record>();
+            try
+            {
+                List<Security_Data_Model_Abtraction>? OTP_List = await Security_Table_DB_Control.ReadAllAsyncTablename(otp_table_name);
+                Security_OTP_Record_List = OTP_List?.Cast<OTP_Record>().ToList();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
         }
         private static async Task<bool> UpdateAsyncDataAsync()
         {
