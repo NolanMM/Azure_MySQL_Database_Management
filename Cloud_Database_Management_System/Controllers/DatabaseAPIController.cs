@@ -6,6 +6,7 @@ using Cloud_Database_Management_System.Security_Services.Security_Table.Data_Mod
 using Cloud_Database_Management_System.Services.Security_Services;
 using System.Numerics;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace Cloud_Database_Management_System.Controllers
 {
@@ -26,7 +27,7 @@ namespace Cloud_Database_Management_System.Controllers
             return Ok(true);
         }
 
-        [HttpPost("Login/{username}/{password}")]
+        [HttpPost("CheckAcount/{username}/{password}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login(string username, string password)
@@ -37,15 +38,21 @@ namespace Cloud_Database_Management_System.Controllers
 
                 if (signInResult)
                 {
-                    return Ok("Sign In successful!");
+                    return Ok("Account worked properly!");
                 }
                 else
                 {
+                    // Call the LogError method with appropriate parameters
+                    await LogError("Login", "Check Account Services", $"Username: {username}, Password: {password}", "Failed", "Sign In failed. Wrong credentials.");
+
                     return BadRequest("Sign In failed. Please check your credentials.");
                 }
             }
             catch (Exception ex)
             {
+                // Log the error and return Internal Server Error
+                await LogError("Login", "Check Account Services", $"Username: {username}, Password: {password}", "Failed", $"Exception: {ex.Message}");
+
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
@@ -83,34 +90,51 @@ namespace Cloud_Database_Management_System.Controllers
 
                     if (OTP_record_created != null)
                     {
-                        // Fire and forget the background task
-                        _ = Task.Run(async () =>
-                        {
-                            bool result = await HandleOTPRecordCreationAsync(OTP_record_created);
-                        });
+                        string jsonBody = Newtonsoft.Json.JsonConvert.SerializeObject(OTP_record_created);
+                        await LogAndPostDataAsync(jsonBody); // Log and post data
 
                         return Ok("Registration process started. Check your email for OTP. Your OTP ID is: " + OTP_record_created.OTP_ID);
                     }
                     else
                     {
+                        await LogError("SignUpRequestProcess", "N/A", "N/A", "Failed", "Registration failed. Please check your input.");
                         return BadRequest("Registration failed. Please check your input.");
                     }
                 }
                 else
                 {
+                    await LogError("SignUpRequestProcess", "N/A", "N/A", "Failed", "Invalid input parameters.");
                     return BadRequest("Invalid input parameters.");
                 }
             }
             catch (Exception ex)
             {
+                // Log the error and return Internal Server Error
+                await LogError("SignUpRequestProcess", "N/A", "N/A", "Failed", $"Exception: {ex.Message}");
+
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
-        private async Task<bool> HandleOTPRecordCreationAsync(OTP_Record otpRecord)
+        private async Task LogAndPostDataAsync(string jsonBody)
         {
-            return await Security_Database_Services_Centre.OTP_Table_Record_Process(otpRecord);
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    string endpointUrl = "https://otpcentrenolanm.azurewebsites.net/NolanM/OTPCentre/OTPProcess";
+                    StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+                    Task.Run(() => client.PostAsync(endpointUrl, content));
+                    await Task.Delay(TimeSpan.FromSeconds(10));
+                }
+                await LogError("PostDataAsync", "Sent to OTP Server", jsonBody, "Success", "Data posted successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                await LogError("PostDataAsync", "Sent to OTP Server", jsonBody, "Failed", "Data posted failed.");
+            }
         }
 
         [HttpPost("RegisterVerifyOTP/{OTP_CODE_ID}/{OTP_CODE}")]
@@ -124,21 +148,26 @@ namespace Cloud_Database_Management_System.Controllers
 
                 if (registrationSuccess)
                 {
+                    await LogError("RegisterVerifyOTP", "RegisterVerifyOTP Services", $"OTP_CODE_ID: {OTP_CODE_ID}, OTP_CODE: {OTP_CODE}", "Success", "Registration successful!");
                     Console.WriteLine("Register Account successful!");
                     return Ok("Register Account successful!");
                 }
 
-                Console.WriteLine("Registration failed. Please check your input.");
-                return BadRequest("Registration failed. Please check your input.");
+                await LogError("RegisterVerifyOTP", "RegisterVerifyOTP Services", $"OTP_CODE_ID: {OTP_CODE_ID}, OTP_CODE: {OTP_CODE}", "Failed", "Registration failed. Wrong Input or Timeout.");
+
+                Console.WriteLine("Registration failed. Registration failed. Wrong Input or Timeout.");
+                return BadRequest("Registration failed. Registration failed. Wrong Input or Timeout.");
             }
             catch (Exception ex)
             {
+                await LogError("RegisterVerifyOTP", "RegisterVerifyOTP Services", $"OTP_CODE_ID: {OTP_CODE_ID}, OTP_CODE: {OTP_CODE}", "Failed", $"Exception: {ex.Message}");
+
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
-        private async Task<bool> VerifyRegistration(string OTP_CODE_ID, string OTP_CODE)
+        private static async Task<bool> VerifyRegistration(string OTP_CODE_ID, string OTP_CODE)
         {
             if (!string.IsNullOrWhiteSpace(OTP_CODE_ID) && !string.IsNullOrEmpty(OTP_CODE))
             {
@@ -149,69 +178,87 @@ namespace Cloud_Database_Management_System.Controllers
         }
 
 
-        [HttpPost("POST/group{groupId}/{tableNumber}")]
+        [HttpPost("POST/{username}/{password}/group{groupId}/{tableNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ProcessPostDataAsync(int groupId, int tableNumber, [FromBody] object data)
+        public async Task<IActionResult> ProcessPostDataAsync(string username,string password, int groupId, int tableNumber, [FromBody] object data)
         {
-            string requestType = "POST";
-            string dataString = JsonSerializer.Serialize(data);
-
-            // Input validation
-            if (groupId == 1 && 0 <= tableNumber && tableNumber <= Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.Count())
+            try
             {
-                try
-                {
-                    object result = await _groupService.ProcessPostDataAsync(groupId, tableNumber, data);
-                    Table_Group_1_Dictionary? tableInfo = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.Index == tableNumber);
+                bool signInResult = await LoginProcess(username, password);
 
-                    if (result is bool && !(bool)result)
+                if (signInResult)
+                {
+                    string requestType = "POST";
+                    string dataString = JsonSerializer.Serialize(data);
+
+                    // Input validation
+                    if (groupId == 1 && 0 <= tableNumber && tableNumber <= Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.Count())
                     {
-                        return BadRequest($"Error {requestType} To Table: {tableInfo?.TableName}");
+                        try
+                        {
+                            object result = await _groupService.ProcessPostDataAsync(groupId, tableNumber, data);
+                            Table_Group_1_Dictionary? tableInfo = Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.FirstOrDefault(info => info.Index == tableNumber);
+
+                            if (result is bool && !(bool)result)
+                            {
+                                return BadRequest($"Error {requestType} To Table: {tableInfo?.TableName}");
+                            }
+
+                            return Ok(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            string issues = ex.Message;
+                            string requestStatus = "Failed";
+
+                            return await LogError(requestType, tableNumber.ToString(), dataString, requestStatus, issues);
+                        }
                     }
+                    else if (groupId == 1 && (tableNumber < 0 || tableNumber > Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.Count()))
+                    {
+                        string issues = "Cannot find the table in the group. Please try again";
+                        string requestStatus = "Failed";
 
-                    return Ok(true);
+                        return await LogError(requestType, tableNumber.ToString(), dataString, requestStatus, issues);
+                    }
+                    else if (groupId != 1 && 0 <= tableNumber && tableNumber <= Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.Count())
+                    {
+                        string issues = "Cannot find the group. Please try again";
+                        string requestStatus = "Failed";
+
+                        return await LogError(requestType, tableNumber.ToString(), dataString, requestStatus, issues);
+                    }
+                    else
+                    {
+                        string issues = "Someone Try to attack, Server in danger!!!!";
+                        string requestStatus = "Failed";
+                        requestType = "AttackPost";
+
+                        return await LogError(requestType, tableNumber.ToString(), dataString, requestStatus, issues);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    string issues = ex.Message;
-                    string requestStatus = "Failed";
-
-                    return await LogError(requestType, tableNumber.ToString(), dataString, requestStatus, issues);
+                    return BadRequest("Sign In failed. Please check your credentials.");
                 }
             }
-            else if (groupId == 1 && (tableNumber < 0 || tableNumber > Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.Count()))
+            catch (Exception ex)
             {
-                string issues = "Cannot find the table in the group. Please try again";
-                string requestStatus = "Failed";
+                await LogError("ProcessPostDataAsync", "ProcessPostDataAsync Services", $"Username: {username}, Password: {password}", "Failed", $"Exception: {ex.Message}, try to log table: {tableNumber}");
 
-                return await LogError(requestType, tableNumber.ToString(), dataString, requestStatus, issues);
-            }
-            else if (groupId != 1 && 0 <= tableNumber && tableNumber <= Table_Group_1_Dictionary.Tablesname_List_with_Data_Type.Count())
-            {
-                string issues = "Cannot find the group. Please try again";
-                string requestStatus = "Failed";
-
-                return await LogError(requestType, tableNumber.ToString(), dataString, requestStatus, issues);
-            }
-            else
-            {
-                string issues = "Someone Try to attack, Server in danger!!!!";
-                string requestStatus = "Failed";
-                requestType = "AttackPost";
-
-                return await LogError(requestType, tableNumber.ToString(), dataString, requestStatus, issues);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
-        [HttpGet("group{groupId}/{tableNumber}")]
+        [HttpGet("{username}/{password}/group{groupId}/{tableNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ProcessGetData(int groupId, int tableNumber)
+        public async Task<IActionResult> ProcessGetData(string username, string password, int groupId, int tableNumber)
         {
             string requestType = "GET_By_Group_ID_Table_Number";
 
@@ -223,18 +270,34 @@ namespace Cloud_Database_Management_System.Controllers
 
             try
             {
-                object result = await _groupService.ProcessGetData(groupId, tableNumber);
+                // Check login status
+                bool signInResult = await LoginProcess(username, password);
 
-                if (result is bool && !(bool)result)
+                if (signInResult)
                 {
-                    return BadRequest("Invalid data for the specified group.");
-                }
-                else if (result is object || result is string)
-                {
-                    return Ok(result);
-                }
+                    string dataString = $"GET group ID: {groupId}, table number: {tableNumber}";
+                    string requestStatus = "Success";
 
-                return NotFound();
+                    object result = await _groupService.ProcessGetData(groupId, tableNumber);
+
+                    if (result is bool && !(bool)result)
+                    {
+                        return BadRequest("Invalid data for the specified group.");
+                    }
+                    else if (result is object || result is string)
+                    {
+                        return Ok(result);
+                    }
+
+                    return NotFound();
+                }
+                else
+                {
+                    // Call the LogError method for login failure
+                    await LogError(requestType, tableNumber.ToString(), $"GET group ID: {groupId}, table number: {tableNumber}", "Failed", "Access denied. Wrong credentials.");
+
+                    return BadRequest("Access denied. Wrong credentials.");
+                }
             }
             catch (Exception ex)
             {
@@ -248,12 +311,12 @@ namespace Cloud_Database_Management_System.Controllers
             }
         }
 
-        [HttpGet("group{groupId}/GetAllData")]
+        [HttpGet("{username}/{password}/group{groupId}/GetAllData")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ProcessGetAllDataTable(int groupId)
+        public async Task<IActionResult> ProcessGetAllDataTable(string username,string password,int groupId)
         {
             string requestType = "GET_All_Data_Group_1";
 
@@ -264,27 +327,43 @@ namespace Cloud_Database_Management_System.Controllers
                 string dataString = $"GET group ID: {groupId} All Tables";
                 string requestStatus = "Failed";
 
+                // Call the LogError method for invalid group ID
                 return await LogError(requestType, "HACK All Tables", dataString, requestStatus, issues);
             }
 
             try
             {
-                var result = await _groupService.ProcessGetAllData(groupId);
+                // Check login status
+                bool signInResult = await LoginProcess(username, password);
 
-                if (result is bool && !(bool)result)
+                if (signInResult)
                 {
-                    return BadRequest("Invalid data for the specified group.");
-                }
-                else if (result is Dictionary<string, object>)
-                {
-                    return Ok(result);
-                }
-                else if (result is Exception)
-                {
-                    return BadRequest($"An error occurred: {((Exception)result).Message}");
-                }
+                    string dataString = $"GET group ID: {groupId} All Tables";
 
-                return NotFound();
+                    var result = await _groupService.ProcessGetAllData(groupId);
+
+                    if (result is bool && !(bool)result)
+                    {
+                        return BadRequest("Invalid data for the specified group.");
+                    }
+                    else if (result is Dictionary<string, object>)
+                    {
+                        return Ok(result);
+                    }
+                    else if (result is Exception)
+                    {
+                        return BadRequest($"An error occurred: {((Exception)result).Message}");
+                    }
+
+                    return NotFound();
+                }
+                else
+                {
+                    // Call the LogError method for login failure
+                    await LogError(requestType, "Get_All_Tables", $"GET group ID: {groupId} All Tables", "Failed", "Access denied. Wrong credentials.");
+
+                    return BadRequest("Access denied. Wrong credentials.");
+                }
             }
             catch (Exception ex)
             {
@@ -292,6 +371,7 @@ namespace Cloud_Database_Management_System.Controllers
                 string issues = $"An error occurred: {ex.Message}";
                 string requestStatus = "Failed";
 
+                // Call the LogError method with appropriate parameters for other errors
                 return await LogError(requestType, "Get_All_Tables", dataString, requestStatus, issues);
             }
         }
