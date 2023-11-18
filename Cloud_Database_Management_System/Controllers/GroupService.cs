@@ -9,7 +9,6 @@ namespace Cloud_Database_Management_System.Controllers
     {
         private IGroupService groupService;
         private DateTime _created { get; set; }
-
         public GroupService(DateTime? created = null)
         {
             _created = DateTime.Now;

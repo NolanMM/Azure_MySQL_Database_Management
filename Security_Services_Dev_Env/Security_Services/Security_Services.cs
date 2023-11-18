@@ -395,7 +395,7 @@ namespace Security_Services_Dev_Env.Services.Security_Services
 
             string pattern = @"[^a-zA-Z0-9]";
 
-            if (Regex.IsMatch(input, pattern))
+            if (!Regex.IsMatch(input, pattern))
             {
                 Console.WriteLine($"{fieldName} contains special characters.");
                 return false;

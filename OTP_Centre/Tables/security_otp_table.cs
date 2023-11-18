@@ -50,7 +50,7 @@ namespace OTP_Centre.Tables
                     string? OTP_ID_Value = (dataType.GetProperty(OTP_ID_Property)?.GetValue(dataModel)) as string;
                     if (OTP_ID_Value != null)
                     {
-                        bool isDeleted = await DeleteExpiredOTPRecordsAsync_Process(OTP_ID_Value, connection);
+                        bool isDeleted = await DeletebyOTPID(OTP_ID_Value);
                         if (isDeleted)
                         {
                             // The record deleted correctly

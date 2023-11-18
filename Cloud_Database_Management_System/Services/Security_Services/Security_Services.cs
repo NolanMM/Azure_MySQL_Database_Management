@@ -9,6 +9,7 @@ using System.Text.Json;
 using Cloud_Database_Management_System.Security_Services.OTP_Services;
 using Cloud_Database_Management_System.Security_Services.Security_Table.Data_Models;
 using Server_Side.Database_Services.Output_Schema.Log_Database_Schema;
+using Microsoft.Extensions.Configuration;
 
 namespace Cloud_Database_Management_System.Services.Security_Services
 {
@@ -22,6 +23,7 @@ namespace Cloud_Database_Management_System.Services.Security_Services
         private static readonly string user_id_table_name = "security_userid";
         private static readonly string password_table_name = "security_password";
         private static readonly string otp_table_name = "otp_table";
+
         public async static Task<bool> SignInProcess(string username, string password)
         {
             bool isValid = false;
@@ -130,7 +132,7 @@ namespace Cloud_Database_Management_System.Services.Security_Services
                                 string OTP_ID = raw_OTP_code.Substring(16, 20);
 
                                 // Send the OTP to the user make sign up request
-                                bool isSend = await OTP_Module_Services.Send_OTP_CodeAsync(OTP_code, email);
+                                bool isSend = await OTP_Module_Services.Send_OTP_CodeAsync(OTP_code, OTP_ID, email, username);
                                 // if sent successful
                                 if (isSend)
                                 {

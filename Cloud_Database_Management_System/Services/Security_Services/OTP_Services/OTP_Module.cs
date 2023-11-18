@@ -1,5 +1,6 @@
 ﻿using System.Net.Mail;
 using System.Net;
+using System.Reflection.Emit;
 
 namespace Cloud_Database_Management_System.Security_Services.OTP_Services
 {
@@ -8,22 +9,23 @@ namespace Cloud_Database_Management_System.Security_Services.OTP_Services
 
         private static readonly Random random = new Random();
         private const string allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
+        private static string _nolanMLogoUrl = "https://drive.google.com/uc?id=1w3mfBR7NBooRlJWaQRmIcoNRbFROo32A";
         public static string GenerateRandomKey(int length)
         {
             return new string(Enumerable.Repeat(allowedCharacters, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        static public async Task<bool> Send_OTP_CodeAsync(string randomCode, string email_to)
+        static public async Task<bool> Send_OTP_CodeAsync(string OTP_CODE,string OTP_CODE_ID, string email_to,string username)
         {
             String from, pass, messageBody;
 
             // Input the information of Sender 
             from = "group1databaseservicesnolanm@gmail.com";
             pass = "lazslzusaxooyirr";
-            messageBody = $"<span style='font-family: Times New Roman; color: red; font-size: larger;'>Hello,</span><br><br>" +
-                $"<span style='font-family: Times New Roman; font-size: larger;'>Your OTP Code is: <b>{randomCode}</b></span><br><br>Sincerely,<br>NolanM - Minh Nguyen";
+            string endpointLink = $"https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/RegisterVerifyOTP/{OTP_CODE_ID}/{OTP_CODE}";
+
+            messageBody = CreateEmailBody(OTP_CODE, endpointLink,username);
 
             // Generate new email to send to the receiver
             MailMessage email = new MailMessage();
@@ -31,7 +33,7 @@ namespace Cloud_Database_Management_System.Security_Services.OTP_Services
             email.From = new MailAddress(from, "NolanM Cloud Database System");
             email.To.Add(email_to);
             email.Body = messageBody;
-            email.Subject = "Password Reset Code";
+            email.Subject = "OTP Verify Code";
             email.IsBodyHtml = true; // Enable HTML formatting
 
             // Generate smtp server to send the verify email 
@@ -53,6 +55,40 @@ namespace Cloud_Database_Management_System.Security_Services.OTP_Services
                 Console.WriteLine(ex.ToString());
                 return false;
             }
+        }
+        private static string CreateEmailBody(string OTP_CODE, string endpointLink,string username)
+        {
+            return $@"
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                      <base target='_top'>
+                    </head>
+                    <body>
+                      <div style='font-family: Helvetica, Arial, sans-serif; min-width: 1000px; overflow: auto; line-height: 2'>
+                        <div style='margin: 50px auto; width: 80%; padding: 20px 0'>
+                            <div style='border-bottom: 5px solid #eee'>
+                                <a href='' style='font-size: 30px; color: #CC0000; text-decoration: none; font-weight: 600'>
+                                    Database Management System - Group 1
+                                </a>
+                            </div>
+                            <br>
+                        <p style='font-size: 22px'>Hello {username},</p>
+                        <p>Thank you for choosing our Database. Use this OTP to complete your Sign Up procedures and verify your account.</p>
+                        <p>Remember, Never share this OTP with anyone.</p><br><br>
+                          <h2 style='margin: 0 auto; width: max-content; padding: 0 10px; color: #CC0000; border-radius: 4px;'>{OTP_CODE}</h2><br>
+                          <div style='text-align: center;'>
+                          <a href='{endpointLink}' style='background: #CC0000; color: #fff; text-decoration: none; padding: 2px 16px; border-radius: 10px; display: inline-block;'>Verify OTP</a><br><br></div><br>
+                          <p style='font-size: 15px;'>Regards,<br /><br>NolanM - Group 1</p>
+                          <hr style='border: none; border-top: 5px solid #eee' />
+                          <div style='float: left; padding: 8px 0; color: #aaa; font-size: 0.8em; line-height: 1; font-weight: 300'>
+                           <img src='{_nolanMLogoUrl}' alt='NolanM Logo' style='width: 50%; max-height: 108px;'>
+                        </div>
+                        </div>
+                      </div>
+                    </body>
+                    </html>
+                    ";
         }
     }
 }

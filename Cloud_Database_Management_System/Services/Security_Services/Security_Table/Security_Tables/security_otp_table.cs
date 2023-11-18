@@ -2,6 +2,7 @@
 using Cloud_Database_Management_System.Security_Services.Security_Table.Data_Models;
 using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Data_Models;
 using Cloud_Database_Management_System.Services.Security_Services.Security_Table.Security_Tables.Security_Tables_Interface;
+using System.Data;
 
 namespace Cloud_Database_Management_System.Security_Services.Security_Table.Security_Tables
 {
@@ -178,6 +179,10 @@ namespace Cloud_Database_Management_System.Security_Services.Security_Table.Secu
         }
         public static async Task<bool> DeletebyOTPID(string? OTP_ID)
         {
+            if(OTP_ID == null)
+            {
+                return false;
+            }
             try
             {
                 using MySqlConnection Connection = new MySqlConnection(connect_String);
@@ -191,8 +196,7 @@ namespace Cloud_Database_Management_System.Security_Services.Security_Table.Secu
 
                 await Connection.CloseAsync();
 
-                // Check if any rows were affected
-                return rowsAffected > 0;
+                return (rowsAffected > 0);
             }
             catch (Exception ex)
             {
@@ -202,3 +206,5 @@ namespace Cloud_Database_Management_System.Security_Services.Security_Table.Secu
         }
     }
 }
+
+

@@ -7,6 +7,7 @@ using Cloud_Database_Management_System.Services.Security_Services;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Text;
+using Cloud_Database_Management_System.Security_Services.OTP_Services;
 
 namespace Cloud_Database_Management_System.Controllers
 {
@@ -75,7 +76,10 @@ namespace Cloud_Database_Management_System.Controllers
         }
 
 
-        [HttpPost("Register/{registerUsername}/{registerEmail}/{registerPassword}")]
+        //[HttpPost("")]
+        [Route("Register/{registerUsername}/{registerEmail}/{registerPassword}")]
+        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SignUpRequestProcess(string? registerUsername, string? registerEmail, string? registerPassword)
@@ -137,7 +141,9 @@ namespace Cloud_Database_Management_System.Controllers
             }
         }
 
-        [HttpPost("RegisterVerifyOTP/{OTP_CODE_ID}/{OTP_CODE}")]
+        [Route("RegisterVerifyOTP/{OTP_CODE_ID}/{OTP_CODE}")]
+        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RegisterVerifyOTP(string OTP_CODE_ID, string OTP_CODE)
