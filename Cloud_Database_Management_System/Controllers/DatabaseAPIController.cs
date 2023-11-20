@@ -29,7 +29,9 @@ namespace Cloud_Database_Management_System.Controllers
         }
 
         // Make the page when error or okay like register pages
-        [HttpPost("CheckAcount/{username}/{password}")]
+        [Route("CheckAcount/{username}/{password}")]
+        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login(string username, string password)
@@ -96,7 +98,8 @@ namespace Cloud_Database_Management_System.Controllers
                     else
                     {
                         await LogError("SignUpRequestProcess", "N/A", "N/A", "Failed", "Registration failed. Please check your input.");
-                        return BadRequest("Registration failed. Please check your input.");
+                        string htmlContent = UI_Static_Services_Control.GenerateGenericRegistrationFailureHtml();
+                        return Content(htmlContent, "text/html");
                     }
                 }
                 else
@@ -150,14 +153,14 @@ namespace Cloud_Database_Management_System.Controllers
                 if (registrationSuccess)
                 {
                     await LogError("RegisterVerifyOTP", "RegisterVerifyOTP Services", $"OTP_CODE_ID: {OTP_CODE_ID}, OTP_CODE: {OTP_CODE}", "Success", "Registration successful!");
-                    Console.WriteLine("Register Account successful!");
-                    return Ok("Register Account successful!");
+                    return Content(UI_Static_Services_Control.GenerateRegistrationSuccessHtml(), "text/html");
                 }
 
                 await LogError("RegisterVerifyOTP", "RegisterVerifyOTP Services", $"OTP_CODE_ID: {OTP_CODE_ID}, OTP_CODE: {OTP_CODE}", "Failed", "Registration failed. Wrong Input or Timeout.");
 
-                Console.WriteLine("Registration failed. Registration failed. Wrong Input or Timeout.");
-                return BadRequest("Registration failed. Registration failed. Wrong Input or Timeout.");
+                Console.WriteLine("Registration failed. Registration failed. Wrong Input Please sign up again after 1 min.");
+                return Content(UI_Static_Services_Control.GenerateRegistrationFailureHtml(), "text/html");
+
             }
             catch (Exception ex)
             {

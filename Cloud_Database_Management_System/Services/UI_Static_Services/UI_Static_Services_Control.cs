@@ -205,5 +205,147 @@ namespace Cloud_Database_Management_System.Services.UI_Static_Services
                 "</body>" +
                 "</html>";
         }
+        public static string GenerateRegistrationSuccessHtml()
+        {
+            return "<!DOCTYPE html>" +
+                "<html lang='en'>" +
+                "<head>" +
+                "<meta charset='UTF-8'>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<title>Registration Successful</title>" +
+                "<style>" +
+                "body {" +
+                "    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" +
+                "    text-align: center;" +
+                "    margin: 50px;" +
+                "    background-color: #f8f8f8;" +
+                "}" +
+                "div {" +
+                "    background-color: #ffffff;" +
+                "    padding: 30px;" +
+                "    border-radius: 10px;" +
+                "    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);" +
+                "    max-width: 600px;" +
+                "    margin: 0 auto;" +
+                "}" +
+                "h2 {" +
+                "    text-align: center;" +
+                "    color: #00CC00; /* Green color for success */" +
+                "}" +
+                "p {" +
+                "    font-size: 20px;" +
+                "}" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div>" +
+                "<h2>Registration Successful</h2>" +
+                "<p>Thank you for registering with us!</p>" +
+                "<p>Your account has been created successfully.</p>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+        }
+
+        public static string GenerateRegistrationFailureHtml()
+        {
+            return "<!DOCTYPE html>" +
+                "<html lang='en'>" +
+                "<head>" +
+                "<meta charset='UTF-8'>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<title>Registration Failed</title>" +
+                "<style>" +
+                "body {" +
+                "    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" +
+                "    text-align: center;" +
+                "    margin: 50px;" +
+                "    background-color: #f8f8f8;" +
+                "}" +
+                "div {" +
+                "    background-color: #ffffff;" +
+                "    padding: 30px;" +
+                "    border-radius: 10px;" +
+                "    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);" +
+                "    max-width: 600px;" +
+                "    margin: 0 auto;" +
+                "}" +
+                "h2 {" +
+                "    text-align: center;" +
+                "    color: #CC0000; /* Red color for error */" +
+                "}" +
+                "p {" +
+                "    font-size: 20px;" +
+                "}" +
+                ".error-message {" +
+                "    color: #CC0000;" +
+                "    margin-top: 20px;" +
+                "}" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div>" +
+                "<h2>Registration Failed</h2>" +
+                "<p>Registration failed. Wrong input or timeout.</p>" +
+                "<p>Please sign up again after 1 minute.</p>" +
+                "<div class='error-message'>" +
+                "<p>Error Details:</p>" +
+                "<p>Registration failed. Wrong input or timeout.</p>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+        }
+
+        public static string GenerateGenericRegistrationFailureHtml()
+        {
+            return "<!DOCTYPE html>" +
+                "<html lang='en'>" +
+                "<head>" +
+                "<meta charset='UTF-8'>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<title>Registration Failed</title>" +
+                "<style>" +
+                "body {" +
+                "    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" +
+                "    text-align: center;" +
+                "    margin: 50px;" +
+                "    background-color: #f8f8f8;" +
+                "}" +
+                "div {" +
+                "    background-color: #ffffff;" +
+                "    padding: 30px;" +
+                "    border-radius: 10px;" +
+                "    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);" +
+                "    max-width: 600px;" +
+                "    margin: 0 auto;" +
+                "}" +
+                "h2 {" +
+                "    text-align: center;" +
+                "    color: #CC0000; /* Red color for error */" +
+                "}" +
+                "p {" +
+                "    font-size: 20px;" +
+                "}" +
+                ".error-message {" +
+                "    color: #CC0000;" +
+                "    margin-top: 20px;" +
+                "}" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div>" +
+                "<h2>Registration Failed</h2>" +
+                "<p>Registration failed. Please check your input.</p>" +
+                "<div class='error-message'>" +
+                "<p>Error Details:</p>" +
+                "<p>Registration failed. Please check your input.</p>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+        }
+
+
     }
 }

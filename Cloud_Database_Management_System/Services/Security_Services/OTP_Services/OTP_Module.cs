@@ -79,7 +79,7 @@ namespace Cloud_Database_Management_System.Security_Services.OTP_Services
                       <div style='font-family: Helvetica, Arial, sans-serif; min-width: 1000px; overflow: auto; line-height: 2'>
                         <div style='margin: 50px auto; width: 80%; padding: 20px 0'>
                             <div style='border-bottom: 5px solid #eee'>
-                                <a href='' style='font-size: 30px; color: #CC0000; text-decoration: none; font-weight: 600'>
+                                <a href='' style='font-size: 30px; color: #CC0000; text-decoration: none; font-weight: 600'>   
                                     Database Management System - Group 1
                                 </a>
                             </div>
@@ -113,7 +113,7 @@ namespace Cloud_Database_Management_System.Security_Services.OTP_Services
                     </head>
                     <body style='font-family: ""Segoe UI"", Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 50px; background-color: #f8f8f8;'>
                         <div style='background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); max-width: 600px; margin: 0 auto; '>
-                            <h2 style='color: #CC0000; text-align: center'>Account Verification</h2>
+                            <h2 style='color: #00CC00; text-align: center'>Account Verification</h2>
                             <p style='font-size: 20px;'>Thank you for starting the registration process.</p>
                             <p>Your OTP ID: <b><span style='color: #CC0000;'><b>{otpId}</span></b></p>
                             <p>Please check your email for the OTP code to complete the registration.</p>
