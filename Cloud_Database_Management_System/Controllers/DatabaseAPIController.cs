@@ -4,10 +4,9 @@ using System.Text.Json;
 using Cloud_Database_Management_System.Repositories.Repository_Group_1.Table_Interface;
 using Cloud_Database_Management_System.Security_Services.Security_Table.Data_Models;
 using Cloud_Database_Management_System.Services.Security_Services;
-using System.Numerics;
-using System.Threading.Tasks;
 using System.Text;
 using Cloud_Database_Management_System.Security_Services.OTP_Services;
+using Cloud_Database_Management_System.Services.UI_Static_Services;
 
 namespace Cloud_Database_Management_System.Controllers
 {
@@ -21,13 +20,15 @@ namespace Cloud_Database_Management_System.Controllers
         {
             _groupService = groupService ?? throw new ArgumentNullException(nameof(groupService));
         }
-
-        [HttpGet("MainPage")]
-        public async Task<IActionResult> PrintInstructionUsingDatabaseService()
+        [HttpGet("Help")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult GetHelpPage()
         {
-            return Ok(true);
+            string htmlContent = UI_Static_Services_Control.GenerateHtmlContentHelpPage();
+            return Content(htmlContent, "text/html");
         }
 
+        // Make the page when error or okay like register pages
         [HttpPost("CheckAcount/{username}/{password}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -39,22 +40,25 @@ namespace Cloud_Database_Management_System.Controllers
 
                 if (signInResult)
                 {
-                    return Ok("Account worked properly!");
+                    string htmlContent = UI_Static_Services_Control.GenerateLoginSuccessHtml();
+                    return Content(htmlContent, "text/html");
                 }
                 else
                 {
                     // Call the LogError method with appropriate parameters
                     await LogError("Login", "Check Account Services", $"Username: {username}, Password: {password}", "Failed", "Sign In failed. Wrong credentials.");
-
-                    return BadRequest("Sign In failed. Please check your credentials.");
+                    string errorMessage = "Invalid username or password.";
+                    string htmlContent = UI_Static_Services_Control.GenerateLoginErrorHtml(errorMessage);
+                    return Content(htmlContent, "text/html");
                 }
             }
             catch (Exception ex)
             {
                 // Log the error and return Internal Server Error
                 await LogError("Login", "Check Account Services", $"Username: {username}, Password: {password}", "Failed", $"Exception: {ex.Message}");
-
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+                string errorMessage = ex.Message;
+                string htmlContent = UI_Static_Services_Control.GenerateLoginErrorHtml(errorMessage);
+                return Content(htmlContent, "text/html");
             }
         }
 
@@ -68,15 +72,6 @@ namespace Cloud_Database_Management_System.Controllers
             return false;
         }
 
-        [HttpGet("Register/Help")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        private async Task<IActionResult> SignUpRequestInstructionProcess()
-        {
-            return Ok();
-        }
-
-
-        //[HttpPost("")]
         [Route("Register/{registerUsername}/{registerEmail}/{registerPassword}")]
         [HttpPost]
         [HttpGet]
@@ -96,8 +91,7 @@ namespace Cloud_Database_Management_System.Controllers
                     {
                         string jsonBody = Newtonsoft.Json.JsonConvert.SerializeObject(OTP_record_created);
                         await LogAndPostDataAsync(jsonBody); // Log and post data
-
-                        return Ok("Registration process started. Check your email for OTP. Your OTP ID is: " + OTP_record_created.OTP_ID);
+                        return Content(OTP_Module_Services.ResponseRegister(OTP_record_created.OTP_ID), "text/html");
                     }
                     else
                     {
@@ -141,6 +135,7 @@ namespace Cloud_Database_Management_System.Controllers
             }
         }
 
+        // Design a page like register code
         [Route("RegisterVerifyOTP/{OTP_CODE_ID}/{OTP_CODE}")]
         [HttpPost]
         [HttpGet]
@@ -183,13 +178,14 @@ namespace Cloud_Database_Management_System.Controllers
             return false;
         }
 
-
-        [HttpPost("POST/{username}/{password}/group{groupId}/{tableNumber}")]
+        // Post to table design a page to return when ok or error
+        [Route("POST/{username}/{password}/group{groupId}/{tableNumber}")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ProcessPostDataAsync(string username,string password, int groupId, int tableNumber, [FromBody] object data)
+        public async Task<IActionResult> ProcessPostDataAsync(string username, string password, int groupId, int tableNumber, [FromBody] object data)
         {
             try
             {
@@ -259,6 +255,7 @@ namespace Cloud_Database_Management_System.Controllers
             }
         }
 
+        // Get data from table create render version route if have time
         [HttpGet("{username}/{password}/group{groupId}/{tableNumber}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -317,12 +314,13 @@ namespace Cloud_Database_Management_System.Controllers
             }
         }
 
+        // Get all data from all table create render version if have time
         [HttpGet("{username}/{password}/group{groupId}/GetAllData")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ProcessGetAllDataTable(string username,string password,int groupId)
+        public async Task<IActionResult> ProcessGetAllDataTable(string username, string password, int groupId)
         {
             string requestType = "GET_All_Data_Group_1";
 
@@ -381,7 +379,6 @@ namespace Cloud_Database_Management_System.Controllers
                 return await LogError(requestType, "Get_All_Tables", dataString, requestStatus, issues);
             }
         }
-
         private async Task<IActionResult> LogError(string requestType, string tableNumber, string dataString, string requestStatus, string issues)
         {
             bool logStatus = await Analysis_and_reporting_log_data_table.WriteLogData_ProcessAsync(

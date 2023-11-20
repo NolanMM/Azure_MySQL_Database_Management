@@ -1,13 +1,5 @@
 using Cloud_Database_Management_System;
 using Cloud_Database_Management_System.Controllers;
-using Cloud_Database_Management_System.Security_Services.OTP_Services;
-using Cloud_Database_Management_System.Services.Security_Services;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json");

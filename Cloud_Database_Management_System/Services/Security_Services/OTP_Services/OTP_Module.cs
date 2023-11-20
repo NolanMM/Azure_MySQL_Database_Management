@@ -1,6 +1,17 @@
 ﻿using System.Net.Mail;
 using System.Net;
 using System.Reflection.Emit;
+using Microsoft.AspNetCore.Http;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Net.WebRequestMethods;
+using System.Diagnostics;
+using System.Drawing;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+using System;
 
 namespace Cloud_Database_Management_System.Security_Services.OTP_Services
 {
@@ -16,7 +27,7 @@ namespace Cloud_Database_Management_System.Security_Services.OTP_Services
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        static public async Task<bool> Send_OTP_CodeAsync(string OTP_CODE,string OTP_CODE_ID, string email_to,string username)
+        static public async Task<bool> Send_OTP_CodeAsync(string OTP_CODE, string OTP_CODE_ID, string email_to, string username)
         {
             String from, pass, messageBody;
 
@@ -25,7 +36,7 @@ namespace Cloud_Database_Management_System.Security_Services.OTP_Services
             pass = "lazslzusaxooyirr";
             string endpointLink = $"https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/RegisterVerifyOTP/{OTP_CODE_ID}/{OTP_CODE}";
 
-            messageBody = CreateEmailBody(OTP_CODE, endpointLink,username);
+            messageBody = CreateEmailBody(OTP_CODE, endpointLink, username);
 
             // Generate new email to send to the receiver
             MailMessage email = new MailMessage();
@@ -56,7 +67,7 @@ namespace Cloud_Database_Management_System.Security_Services.OTP_Services
                 return false;
             }
         }
-        private static string CreateEmailBody(string OTP_CODE, string endpointLink,string username)
+        private static string CreateEmailBody(string OTP_CODE, string endpointLink, string username)
         {
             return $@"
                     <!DOCTYPE html>
@@ -89,6 +100,31 @@ namespace Cloud_Database_Management_System.Security_Services.OTP_Services
                     </body>
                     </html>
                     ";
+        }
+        public static string ResponseRegister(string otpId)
+        {
+            return $@"
+                    <!DOCTYPE html>
+                    <html lang='en'>
+                    <head>
+                        <meta charset='UTF-8'>
+                        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                        <title>Account Verification</title>
+                    </head>
+                    <body style='font-family: ""Segoe UI"", Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 50px; background-color: #f8f8f8;'>
+                        <div style='background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); max-width: 600px; margin: 0 auto; '>
+                            <h2 style='color: #CC0000; text-align: center'>Account Verification</h2>
+                            <p style='font-size: 20px;'>Thank you for starting the registration process.</p>
+                            <p>Your OTP ID: <b><span style='color: #CC0000;'><b>{otpId}</span></b></p>
+                            <p>Please check your email for the OTP code to complete the registration.</p>
+                        <div style='background-color: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 20px;'>
+                            <p>Please make the request to this endpoint to verify your account:</p>
+                            <p style='font-size: 12px;'>https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController</p><p style='font-size: 12px;'>/RegisterVerifyOTP/{otpId}/(OTP_CODE)</p>
+                        </div>
+                        </div></b>
+                    </body>
+                    </html>
+        ";
         }
     }
 }
