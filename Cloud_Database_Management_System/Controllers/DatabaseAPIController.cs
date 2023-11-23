@@ -28,6 +28,22 @@ namespace Cloud_Database_Management_System.Controllers
             return Content(htmlContent, "text/html");
         }
 
+        [HttpGet("Login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult GetHelpPageLogin()
+        {
+            string htmlContent = UI_Static_Services_Control.GenerateHtmlContentLoginPage();
+            return Content(htmlContent, "text/html");
+        }
+
+        [HttpGet("SignUp")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult GetHelpPageRegister()
+        {
+            string htmlContent = UI_Static_Services_Control.GenerateHtmlContentSignUpPage();
+            return Content(htmlContent, "text/html");
+        }
+
         // Make the page when error or okay like register pages
         [Route("CheckAcount/{username}/{password}")]
         [HttpPost]
@@ -93,7 +109,8 @@ namespace Cloud_Database_Management_System.Controllers
                     {
                         string jsonBody = Newtonsoft.Json.JsonConvert.SerializeObject(OTP_record_created);
                         await LogAndPostDataAsync(jsonBody); // Log and post data
-                        return Content(OTP_Module_Services.ResponseRegister(OTP_record_created.OTP_ID), "text/html");
+                        string htmlContent = OTP_Module_Services.ResponseRegister(OTP_record_created.OTP_ID);
+                        return Content(htmlContent, "text/html");
                     }
                     else
                     {
@@ -127,7 +144,7 @@ namespace Cloud_Database_Management_System.Controllers
                     string endpointUrl = "https://otpcentrenolanm.azurewebsites.net/NolanM/OTPCentre/OTPProcess";
                     StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
                     Task.Run(() => client.PostAsync(endpointUrl, content));
-                    await Task.Delay(TimeSpan.FromSeconds(10));
+                    await Task.Delay(TimeSpan.FromSeconds(5));
                 }
                 await LogError("PostDataAsync", "Sent to OTP Server", jsonBody, "Success", "Data posted successfully.");
             }
