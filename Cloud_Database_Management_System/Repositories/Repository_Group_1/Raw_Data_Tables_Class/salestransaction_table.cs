@@ -51,6 +51,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_D
                         User_ID = reader.GetString(1),
                         Order_Value = reader.GetDecimal(2),
                         date = reader.GetDateTime(3),
+                        Details_Products = reader.GetString(4),
                     };
                     saleTransaction_list.Add(saleTransaction);
                 }

@@ -26,7 +26,9 @@ namespace Cloud_Database_Management_System.Models.Group_Data_Models.Group_1_Data
         [Required(ErrorMessage = "Date is required")]
         [DateNotDefault(ErrorMessage = "Date must be filled")]
         public DateTime date { get; set; }
-
+        [Required(ErrorMessage ="The item list cannot be empty")]
+        [MaxLength(10000)]
+        public string Details_Products {  get; set; }
         //public SaleTransaction() {
         //    Transaction_ID = string.Empty;
         //    User_ID = string.Empty;
