@@ -13,7 +13,7 @@ namespace ClientGetHttp.DatabaseServices.Services
 {
     public class PageViewTableService : IDatabaseServices
     {
-        private readonly string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/group1/1";
+        private readonly string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/minhnguyen/Connhenbeo1/group1/1";
 
         public async Task<List<Group_1_Record_Abstraction>?> GetDataServiceAsync()
         {
@@ -56,6 +56,52 @@ namespace ClientGetHttp.DatabaseServices.Services
                 }
             }
             return PageViewData;
+        }
+        public Dictionary<string, (string, string)>? ProcessPageViewList(List<PageView>? PageView_Lists, string UserID)
+        {
+            if (PageView_Lists == null)
+            {
+                return null;
+            }
+
+            Dictionary<string, (string, string)> return_Data = new Dictionary<string, (string, string)>(); // Product ID, (Count, Date)
+
+            foreach (PageView pageView in PageView_Lists)
+            {
+                string productId = pageView.Product_ID;
+
+                // Check if the UserID is not equal to the specified UserID
+                if (pageView.UserID != UserID)
+                {
+                    string dateKey = pageView.Start_Time.ToShortDateString();
+
+                    if (!return_Data.ContainsKey(productId))
+                    {
+                        // Product ID is unique, add to the dictionary with count 1 and date
+                        return_Data.Add(productId, ("1", dateKey));
+                    }
+                    else
+                    {
+                        // Product ID is duplicated, check if the date is the same
+                        var (count, existingDate) = return_Data[productId];
+
+                        if (existingDate == dateKey)
+                        {
+                            // Same date, increment the count
+                            int countInt = int.Parse(count);
+                            countInt++;
+                            return_Data[productId] = (countInt.ToString(), dateKey);
+                        }
+                        else
+                        {
+                            // Different date, add a new entry with count 1 and the new date
+                            return_Data.Add($"{productId}_{dateKey}", ("1", dateKey));
+                        }
+                    }
+                }
+            }
+
+            return return_Data;
         }
 
         private static bool ValidateDataAnnotations(PageView pageView)

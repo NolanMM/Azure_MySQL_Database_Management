@@ -13,7 +13,7 @@ namespace Cloud_Database_Management_System.Services.UI_Static_Services
     {
         public static string GenerateHtmlContentHelpPage()
         {
-            string htmlContent =@"
+            string htmlContent = @"
                             <!DOCTYPE html>
                             <html lang='en'>
                             <head>
@@ -78,44 +78,44 @@ namespace Cloud_Database_Management_System.Services.UI_Static_Services
                                 <section>
                                     <h2>1. Check Account Login</h2>
                                     <p><strong>Endpoint:</strong> <code>/Group1/DatabaseController/CheckAcount/{username}/{password}</code></p>
-                                    <pre>curl -X https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/CheckAcount/johndoe/secret</pre>
+                                    <pre>curl -X https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/CheckAcount/minhnguyen/Connhenbeo1</pre>
                                 </section>
                                 <section>
                                     <h2>2. User Registration</h2>
                                     <p><strong>Endpoint:</strong> <code>POST /Group1/DatabaseController/Register/{registerUsername}/{registerEmail}/{registerPassword}</code></p>
-                                    <pre>curl -X POST https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/Register/johndoe/johndoe@email.com/secret</pre>
+                                    <pre>curl -X POST https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/Register/minhnguyen1/minhlenguyen02@email.com/Connhenbeo1</pre>
                                 </section>
                                 <section>
                                     <h2>3. Verify OTP Code</h2>
                                     <p><strong>Endpoint:</strong> <code>POST /Group1/DatabaseController/VerifyOTP/{OTP_CODE_ID}/{otpCode}</code></p>
-                                    <p>Replace <code>(username)</code> with the user's username and <code>(otpCode)</code> with the OTP code from email to verify.</p>
+                                    <p>Replace <code>(OTP_CODE_ID)</code> with the OTP_CODE_ID return after sign up and <code>(otpCode)</code> with the OTP code from email to verify.</p>
                                     <pre>curl -X POST https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/VerifyOTP/OTP_CODE_ID/otpCode</pre>
                                 </section>
                                 <section>
                                     <h2>4. Get Data from Table in Group</h2>
                                     <p><strong>Endpoint:</strong> <code>GET /{username}/{password}/group{groupId}/{tableNumber}</code></p>
-                                    <pre>curl -X GET https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/johndoe/secret/group1/1</pre>
+                                    <pre>curl -X GET https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/minhnguyen/Connhenbeo1/group1/1</pre>
                                 </section>
                                 <section>
                                     <h2>5. Get All Tables in Group</h2>
                                     <p><strong>Endpoint:</strong> <code>GET /{username}/{password}/group{groupId}/GetAllData</code></p>
-                                    <pre>curl -X GET https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/johndoe/secret/group1/GetAllData</pre>
+                                    <pre>curl -X GET https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/minhnguyen/Connhenbeo1/group1/GetAllData</pre>
                                 </section>
                                 <section>
                                     <h2>6. Post Data to Table in Group</h2>
                                     <p><strong>Endpoint:</strong> <code>POST /{username}/{password}/group{groupId}/{tableNumber}</code></p>
                                     <p>Post data to a specific table in a group.</p>
                                 <b> Example for UserView object</b>
-                                    <pre>curl -X POST https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/johndoe/secret/group1/1 -H ""Content-Type: application/json"" -d '{""UserView_ID"": 1, ""User_ID"": ""user123"", ""Product_ID"": ""product123"", ""Time_Count"": 2.5, ""Date_Access"": ""2023-11-20T12:00:00""}'</pre>
-                            <br><b>
-                                    Example for Transaction object</b>
-                                    <pre>curl -X POST https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/johndoe/secret/group1/2 -H ""Content-Type: application/json"" -d '{""Transaction_ID"": ""trans123"", ""User_ID"": ""user123"", ""Order_Value"": 100.5, ""date"": ""2023-11-20T12:00:00""}'</pre>
+                                    <pre>curl -X POST https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/minhnguyen/Connhenbeo1/group1/0 -H ""Content-Type: application/json"" -d '{""UserView_ID"": 1, ""User_ID"": ""user123"", ""Product_ID"": ""product123"", ""Time_Count"": 2.5, ""Date_Access"": ""2023-11-20T12:00:00""}'</pre>
                             <br><b>
                                     Example for PageView object</b>
-                                    <pre>curl -X POST https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/johndoe/secret/group1/3 -H ""Content-Type: application/json"" -d '{""PageView_ID"": 1, ""Page_Name"": ""Page1"", ""Page_Info"": ""Info1"", ""Product_ID"": ""product123"", ""Start_Time"": ""2023-11-20T12:00:00"", ""UserID"": ""user123""}'</pre>
+                                    <pre>curl -X POST https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/minhnguyen/Connhenbeo1/group1/1 -H ""Content-Type: application/json"" -d '{""PageView_ID"": 1, ""Page_Name"": ""Page1"", ""Page_Info"": ""Info1"", ""Product_ID"": ""product123"", ""Start_Time"": ""2023-11-20T12:00:00"", ""UserID"": ""user123""}'</pre>
+                            <br><b>
+                                    Example for Transaction object</b>
+                                    <pre>curl -X POST https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/minhnguyen/Connhenbeo1/group1/2 -H ""Content-Type: application/json"" -d '{""Transaction_ID"": ""trans123"", ""User_ID"": ""user123"", ""Order_Value"": 100.5, ""date"": ""2023-11-20T12:00:00"", ""Details_Products"": ""[{Product_ID: 1 Product_Price: 120.25, Product_Quantity: 1},{Product_ID: 132 Product_Price: 120.25, Product_Quantity: 2},{Product_ID: 231 Product_Price: 221.25, Product_Quantity: 6}]""}'</pre>
                             <br><b>
                                     Example for Feedback object</b>
-                                    <pre>curl -X POST https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/johndoe/secret/group1/4 -H ""Content-Type: application/json"" -d '{""Feedback_ID"": 1, ""User_ID"": ""user123"", ""Product_ID"": ""product123"", ""Stars_Rating"": 4.5, ""Date_Updated"": ""2023-11-20T12:00:00""}'</pre>
+                                    <pre>curl -X POST https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/minhnguyen/Connhenbeo1/group1/3 -H ""Content-Type: application/json"" -d '{""Feedback_ID"": 1, ""User_ID"": ""user123"", ""Product_ID"": ""product123"", ""Stars_Rating"": 4.5, ""Date_Updated"": ""2023-11-20T12:00:00""}'</pre>
                                 </section>
                             </body>
                             </html>

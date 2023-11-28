@@ -32,6 +32,7 @@ namespace Cloud_Database_Management_System.Repositories.Repository_Group_1.Raw_D
         }
         public async Task<List<object>?> ReadAllAsync()
         {
+            feedback_list.Clear();
             try
             {
                 using MySqlConnection Connection = new MySqlConnection(connect_String);

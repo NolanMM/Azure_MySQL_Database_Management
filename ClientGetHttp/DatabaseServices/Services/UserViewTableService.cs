@@ -13,7 +13,7 @@ namespace ClientGetHttp.DatabaseServices.Services
 {
     public class UserViewTableService : IDatabaseServices
     {
-        private readonly string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/group1/0";
+        private readonly string apiUrl = "https://analysisreportingdatabasemodulegroup1.azurewebsites.net/Group1/DatabaseController/minhnguyen/Connhenbeo1/group1/0";
 
         public async Task<List<Group_1_Record_Abstraction>?> GetDataServiceAsync()
         {
@@ -55,6 +55,52 @@ namespace ClientGetHttp.DatabaseServices.Services
                 }
             }
             return UserViewData;
+        }
+        public Dictionary<string, (string, string)>? ProcessUserViewList(List<UserView>? UserView_Lists, string UserID)
+        {
+            if (UserView_Lists == null)
+            {
+                return null;
+            }
+
+            Dictionary<string, (string, string)> return_Data = new Dictionary<string, (string, string)>(); // Product ID, (Count, Date)
+
+            foreach (UserView userView in UserView_Lists)
+            {
+                string productId = userView.Product_ID;
+
+                // Check if the UserID is not equal to the specified UserID
+                if (userView.User_ID != UserID)
+                {
+                    string dateKey = userView.Date_Access.ToShortDateString();
+
+                    if (!return_Data.ContainsKey(productId))
+                    {
+                        // Product ID is unique, add to the dictionary with count 1 and date
+                        return_Data.Add(productId, ("1", dateKey));
+                    }
+                    else
+                    {
+                        // Product ID is duplicated, check if the date is the same
+                        var (count, existingDate) = return_Data[productId];
+
+                        if (existingDate == dateKey)
+                        {
+                            // Same date, increment the count
+                            int countInt = int.Parse(count);
+                            countInt++;
+                            return_Data[productId] = (countInt.ToString(), dateKey);
+                        }
+                        else
+                        {
+                            // Different date, add a new entry with count 1 and the new date
+                            return_Data.Add($"{productId}_{dateKey}", ("1", dateKey));
+                        }
+                    }
+                }
+            }
+
+            return return_Data;
         }
 
         private static bool ValidateDataAnnotations(UserView userView)
