@@ -1,0 +1,145 @@
+name: Release_Work_Flow
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  Set-Up-Environment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Restore
+        run: dotnet restore ./Cloud_Database_Management_System.sln
+
+  Build:
+    runs-on: ubuntu-latest
+    needs: Set-Up-Environment
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Restore
+        run: dotnet restore ./Cloud_Database_Management_System.sln
+
+      - name: Build
+        run: dotnet build ./Cloud_Database_Management_System.sln --configuration Release --no-restore
+
+  UnitTest_Userview_Table_Module:
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Restore
+        run: dotnet restore ./Cloud_Database_Management_System.sln
+
+      - name: Build
+        run: dotnet build ./Cloud_Database_Management_System.sln --configuration Release --no-restore
+        
+      - name: Run Unit Tests In Database_Services_Tests Userview Table Folder
+        run: dotnet test UserviewTable_Services_Tests/UserviewTable_Services_Tests.csproj
+        
+  UnitTest_PageView_Table_Module:
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Restore
+        run: dotnet restore ./Cloud_Database_Management_System.sln
+
+      - name: Build
+        run: dotnet build ./Cloud_Database_Management_System.sln --configuration Release --no-restore
+        
+      - name: Run Unit Tests In Database_Services_Tests PageView Table Folder
+        run: dotnet test PageViewTable_Services/PageViewTable_Services_Tests.csproj
+
+  UnitTest_SaleTransaction_Table_Module:
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Restore
+        run: dotnet restore ./Cloud_Database_Management_System.sln
+
+      - name: Build
+        run: dotnet build ./Cloud_Database_Management_System.sln --configuration Release --no-restore
+        
+      - name: Run Unit Tests In Database_Services_Tests SaleTransaction Table Folder
+        run: dotnet test SaleTransactionTable_Services_Tests/SaleTransactionTable_Services_Tests.csproj
+
+  UnitTest_Feedback_Table_Module:
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Restore
+        run: dotnet restore ./Cloud_Database_Management_System.sln
+
+      - name: Build
+        run: dotnet build ./Cloud_Database_Management_System.sln --configuration Release --no-restore
+        
+      - name: Run Unit Tests In Database_Services_Tests Feedback Table Folder
+        run: dotnet test FeedbackTable_Services_Tests/FeedbackTable_Services_Tests.csproj
+
+  Acceptance_Test_Module:
+    runs-on: ubuntu-latest
+    needs: [UnitTest_Userview_Table_Module,UnitTest_PageView_Table_Module,UnitTest_SaleTransaction_Table_Module,UnitTest_Feedback_Table_Module]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Restore
+        run: dotnet restore ./Cloud_Database_Management_System.sln
+
+      - name: Build
+        run: dotnet build ./Cloud_Database_Management_System.sln --configuration Release --no-restore
+        
+      - name: Run Unit Tests In Database_Services_Tests Userview Table Folder
+        run: dotnet test Databbase_Tests/Databbase_Tests.csproj
+        
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3.1.3
+        with:
+          name: Cloud-Database-Management-Artifact
+          path: Cloud_Database_Management_System/Cloud_Database_Management_System.csproj
