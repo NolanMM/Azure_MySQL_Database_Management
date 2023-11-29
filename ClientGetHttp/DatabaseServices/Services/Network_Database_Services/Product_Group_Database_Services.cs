@@ -7,13 +7,13 @@ namespace ClientGetHttp.DatabaseServices.Services.Network_Database_Services
     public class ResponseData
     {
         [JsonPropertyName("pid")]
-        public string pid { get; set; }
+        public string pid { get; set; }             // Need Product ID
 
         [JsonPropertyName("sid")]
-        public string sid { get; set; }
+        public string sid { get; set; }             // Need - UserID
 
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string Name { get; set; }                // Need
 
         [JsonPropertyName("description")]
         public string Description { get; set; }
@@ -24,7 +24,7 @@ namespace ClientGetHttp.DatabaseServices.Services.Network_Database_Services
         [JsonPropertyName("category")]
         public string Category { get; set; }
 
-        [JsonPropertyName("price")]
+        [JsonPropertyName("price")]                 // need Product Prices
         public double Price { get; set; }
 
         [JsonPropertyName("stock")]
@@ -91,6 +91,50 @@ namespace ClientGetHttp.DatabaseServices.Services.Network_Database_Services
                 }
             }
             return responseDatas;
+        }
+
+        public Dictionary<string, (string, string, string, string)>? ProcessGetTableRequestByUserID_All_List(List<ResponseData>? ResponseData_list)
+        {
+            if (ResponseData_list == null)
+            {
+                return null;
+            }
+
+            Dictionary<string, (string, string, string, string)> return_Data = new Dictionary<string, (string, string, string, string)>(); // (pid, (sid, Name, Price, Date))
+
+            foreach (ResponseData feedback in ResponseData_list)
+            {
+                string productId = feedback.pid;
+                string supplierId = feedback.sid;
+                string name = feedback.Name;
+                double price = feedback.Price;
+                string dateKey = DateTime.Now.ToShortDateString();
+
+                if (!return_Data.ContainsKey(productId))
+                {
+                    // Product ID is unique, add to the dictionary
+                    return_Data.Add(productId, (supplierId, name, price.ToString(), dateKey));
+                }
+                else
+                {
+                    // Product ID is duplicated, calculate the average star rating within the date range 1 day
+                    var (existingSupplierId, existingName, existingPrice, existingDateKey) = return_Data[productId];
+
+                    if (existingDateKey == dateKey)
+                    {
+                        // Same date, calculate average prices
+                        double existingPriceDouble = double.Parse(existingPrice);
+                        double averagePrice = (existingPriceDouble + price) / 2;
+                        return_Data[productId] = (existingSupplierId, existingName, averagePrice.ToString(), dateKey);
+                    }
+                    else
+                    {
+                        // Different date, add a new entry
+                        return_Data.Add($"{productId}_{dateKey}", (supplierId, name, price.ToString(), dateKey));
+                    }
+                }
+            }
+            return return_Data;
         }
 
         public static bool ValidateDataAnnotations<T>(T data)
