@@ -1,4 +1,6 @@
-﻿namespace ClientGetHttp.DatabaseServices
+﻿using ClientGetHttp.DatabaseServices.Services.Network_Database_Services;
+
+namespace ClientGetHttp.DatabaseServices
 {
     class Program
     {
@@ -7,6 +9,7 @@
             Console.WriteLine("Choose an option:");
             Console.WriteLine("1. Fetch data for a specific table");
             Console.WriteLine("2. Test ProcessDataForGetTableCorrespondingUserID function");
+            Console.WriteLine("3. Test Product_Group_Database_Services.GetDataServiceAsync function");
 
             if (int.TryParse(Console.ReadLine(), out int option))
             {
@@ -69,9 +72,26 @@
                             Console.WriteLine(formattedRow);
                         }
                     }
+                    
+                }
+                else if (option == 3)
+                {
+                    List<ResponseData>? return_response = await Product_Group_Database_Services.GetDataServiceAsync();
+
+                    if (return_response != null)
+                    {
+                        foreach (var responseData in return_response)
+                        {
+                            Console.WriteLine($"ProductId: {responseData.pid}, SupplierId: {responseData.sid}, " +
+                                              $"Name: {responseData.Name}, Description: {responseData.Description}, " +
+                                              $"Image: {responseData.Image}, Category: {responseData.Category}, " +
+                                              $"Price: {responseData.Price}, Stock: {responseData.Stock}, " +
+                                              $"Sales: {responseData.Sales}, Rating: {responseData.Rating}, Clicks: {responseData.Clicks}");
+                        }
+                    }
                     else
                     {
-                        Console.WriteLine("An error occurred or the result is null.");
+                        Console.WriteLine("No data returned from the service.");
                     }
                 }
                 else
