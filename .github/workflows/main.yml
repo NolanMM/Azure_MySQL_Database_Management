@@ -1,0 +1,34 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: Restore
+        run: dotnet restore ./Cloud_Database_Management_System.sln
+
+      - name: Build
+        run: dotnet build ./Cloud_Database_Management_System.sln --configuration Release --no-restore
+
+      - name: Run Unit Tests In DatabaseAnalysisModuleTests Folder
+        run: dotnet test Databbase_Tests/Databbase_Tests.csproj
+
+      - name: Publish Test Results DatabaseAnalysisModuleTests Folder
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results-database
+          path: DatabaseAnalysisModuleTests/TestResults
