@@ -45,7 +45,7 @@ namespace ClientGetHttp.DatabaseServices
                     Console.WriteLine("Enter the UserID for testing ProcessDataForGetTableCorrespondingUserID function: ");
                     string userID = Console.ReadLine();
 
-                    Dictionary<string, (string, string, string, string)>? result = await Database_Centre.ProcessDataForGetTableCorrespondingUserID(userID);
+                    Dictionary<string, (string, string, string, string)>? result = await Database_Centre.ProcessDataForGetTableCorrespondingUserID_Database(userID);
 
                     if (result != null)
                     {

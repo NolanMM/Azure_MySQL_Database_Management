@@ -2,6 +2,7 @@
 using ClientGetHttp.DatabaseServices.Services.Interface_Service;
 using ClientGetHttp.DatabaseServices.Services.Model;
 using ClientGetHttp.DatabaseServices.Services.Models.Interfaces;
+using ClientGetHttp.DatabaseServices.Services.Network_Database_Services;
 using System.Collections.Generic;
 
 namespace ClientGetHttp.DatabaseServices
@@ -58,7 +59,50 @@ namespace ClientGetHttp.DatabaseServices
 
         // Return list Dictionary<string,( string, string, string, string)              [Product name, Today sales total corresponding to that product id, total view corresponding to that product ID]
 
-        public static async Task<Dictionary<string, (string, string, string, string)>?> ProcessDataForGetTableCorrespondingUserID(string UserID)
+        public static async Task<Dictionary<string, (string, string, string, string, string, string)>?> ProcessDataForGetTableCorrespondingUserID(string UserID)        // pid,(sid == UserID, Name, TodaySale, TodayViews, Product Prices, Date)
+        {
+            try
+            {
+                Dictionary<string, (string, string, string, string, string, string)> ReturnData = new Dictionary<string, (string, string, string, string, string, string)>();   // pid,(sid == UserID, Name, TodaySale, TodayViews, Product Prices, Date)
+
+                // Retrieve data from the database
+                Dictionary<string, (string, string, string, string)>? return_Product_List_Database = await ProcessDataForGetTableCorrespondingUserID_Database("None");   // ProductId (pid), PageViewNumberPageViewNumber (TodayViews), UserViewNumber, TotalQuantity(TodaySale), Date(Date) for all userID
+
+                // Retrieve data from the product module
+                Dictionary<string, (string, string, string, string)>? return_Product_List_Product_Module = await Product_Group_Database_Services.ProcessGetTableRequestByUserIDAsync(UserID);   // (pid, (sid == UserID (all the values the same in column)), Name, Price, Date)) specific for input userID
+
+                // Iterate through the product IDs in the database
+                foreach (var pid in return_Product_List_Database.Keys)
+                {
+                    // Check if the product ID is present in the product module data
+                    if (return_Product_List_Product_Module.TryGetValue(pid, out var productModuleData))
+                    {
+                        // Check if the sid (UserID) and the date match
+                        if (productModuleData.Item1 == UserID && return_Product_List_Database[pid].Item4 == productModuleData.Item4)
+                        {
+                            // Combine data from both sources into the ReturnData dictionary
+                            ReturnData[pid] = (
+                                UserID,
+                                return_Product_List_Product_Module[pid].Item2,
+                                return_Product_List_Database[pid].Item3,
+                                return_Product_List_Database[pid].Item4,
+                                return_Product_List_Product_Module[pid].Item3,
+                                return_Product_List_Database[pid].Item4
+                            );
+                        }
+                    }
+                }
+
+                return ReturnData;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+
+        public static async Task<Dictionary<string, (string, string, string, string)>?> ProcessDataForGetTableCorrespondingUserID_Database(string UserID)
         {
             try
             {
@@ -86,10 +130,10 @@ namespace ClientGetHttp.DatabaseServices
                 Process_And_Print_Table_DataAsync(saleTransaction_table_Data);
 
                 Dictionary<string, (string, string)>? return_Data_userView = new Dictionary<string, (string, string)>(); // Product ID, (Count, Date)
-                Dictionary<string, (string, string)>? return_Data_PageView= new Dictionary<string, (string, string)>(); // Product ID, (Count, Date)
+                Dictionary<string, (string, string)>? return_Data_PageView = new Dictionary<string, (string, string)>(); // Product ID, (Count, Date)
                 Dictionary<string, (string, string)>? return_Data_SaleTransactionTable = new Dictionary<string, (string, string)>(); // Product ID, (Total Quantity, Date)
 
-                return_Data_userView = userViewTableService.ProcessUserViewList(Valid_User_Views_Table,UserID);
+                return_Data_userView = userViewTableService.ProcessUserViewList(Valid_User_Views_Table, UserID);
                 return_Data_PageView = pageViewTableService.ProcessPageViewList(Website_logs_table, UserID);
                 return_Data_SaleTransactionTable = saleTransactionTableService.ProcessSaleTransactionList(SalesTransactionsTable, UserID);
 
@@ -103,6 +147,7 @@ namespace ClientGetHttp.DatabaseServices
                 return null;
             }
         }
+
         private static Dictionary<string, (string, string, string, string)> FullOuterJoin(
                 Dictionary<string, (string, string)>? userViewData,
                 Dictionary<string, (string, string)>? pageViewData,

@@ -93,7 +93,7 @@ namespace ClientGetHttp.DatabaseServices.Services.Network_Database_Services
             return responseDatas;
         }
 
-        public async Task<Dictionary<string, (string, string, string, string)>?> ProcessGetTableRequestByUserIDAsync(string UserID)
+        public static async Task<Dictionary<string, (string, string, string, string)>?> ProcessGetTableRequestByUserIDAsync(string UserID)
         {
             Dictionary<string, (string, string, string, string)>? processedData = await ProcessGetTableRequestByUserID_All_List();
 
@@ -109,7 +109,7 @@ namespace ClientGetHttp.DatabaseServices.Services.Network_Database_Services
             return filteredData;
         }
 
-        public async Task<Dictionary<string, (string, string, string, string)>?> ProcessGetTableRequestByUserID_All_List()
+        public static async Task<Dictionary<string, (string, string, string, string)>?> ProcessGetTableRequestByUserID_All_List()
         {
             List<ResponseData>? ResponseData_list = await GetDataServiceAsync();
 
