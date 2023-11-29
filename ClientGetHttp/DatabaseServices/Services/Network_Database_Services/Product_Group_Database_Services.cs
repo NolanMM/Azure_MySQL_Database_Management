@@ -93,8 +93,26 @@ namespace ClientGetHttp.DatabaseServices.Services.Network_Database_Services
             return responseDatas;
         }
 
-        public Dictionary<string, (string, string, string, string)>? ProcessGetTableRequestByUserID_All_List(List<ResponseData>? ResponseData_list)
+        public async Task<Dictionary<string, (string, string, string, string)>?> ProcessGetTableRequestByUserIDAsync(string UserID)
         {
+            Dictionary<string, (string, string, string, string)>? processedData = await ProcessGetTableRequestByUserID_All_List();
+
+            if (processedData == null)
+            {
+                return null;
+            }
+
+            // Filter the processed data by UserID
+            var filteredData = processedData.Where(kv => kv.Value.Item1 == UserID)
+                                            .ToDictionary(kv => kv.Key, kv => kv.Value);
+
+            return filteredData;
+        }
+
+        public async Task<Dictionary<string, (string, string, string, string)>?> ProcessGetTableRequestByUserID_All_List()
+        {
+            List<ResponseData>? ResponseData_list = await GetDataServiceAsync();
+
             if (ResponseData_list == null)
             {
                 return null;
