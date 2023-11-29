@@ -48,9 +48,25 @@
                     {
                         Console.WriteLine("Results of ProcessDataForGetTableCorrespondingUserID function:");
 
+                        int productIdMaxLength = result.Keys.Max(k => k.Length);
+                        int userViewNumberMaxLength = result.Values.Max(v => v.Item1.Length);
+                        int pageViewNumberMaxLength = result.Values.Max(v => v.Item2.Length);
+                        int totalQuantityMaxLength = result.Values.Max(v => v.Item3.Length);
+                        int dateMaxLength = result.Values.Max(v => v.Item4.Length);
+
+                        string header = $"| {"ProductId".PadRight(productIdMaxLength)} | {"UserViewNumber".PadRight(userViewNumberMaxLength)} | {"PageViewNumber".PadRight(pageViewNumberMaxLength)} | {"TotalQuantity".PadRight(totalQuantityMaxLength)} | {"Date".PadRight(dateMaxLength)} |";
+                        Console.WriteLine(header);
+
                         foreach (var entry in result)
                         {
-                            Console.WriteLine($"ProductID: {entry.Key}, UserViewNumber: {entry.Value.Item1}, PageViewNumber: {entry.Value.Item2}, TotalQuantity: {entry.Value.Item3}, Date: {entry.Value.Item4}");
+                            string productIdColumn = entry.Key.PadRight(productIdMaxLength);
+                            string userViewNumberColumn = entry.Value.Item1.PadRight(userViewNumberMaxLength + 13);
+                            string pageViewNumberColumn = entry.Value.Item2.PadRight(pageViewNumberMaxLength + 13);
+                            string totalQuantityColumn = entry.Value.Item3.PadRight(totalQuantityMaxLength + 12);
+                            string dateColumn = entry.Value.Item4.PadRight(dateMaxLength);
+
+                            string formattedRow = $"| {productIdColumn} | {userViewNumberColumn} | {pageViewNumberColumn} | {totalQuantityColumn} | {dateColumn} |";
+                            Console.WriteLine(formattedRow);
                         }
                     }
                     else
