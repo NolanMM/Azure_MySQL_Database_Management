@@ -114,7 +114,7 @@ namespace ClientGetHttp.DatabaseServices.Services
             public int Product_Quantity { get; set; }
         }
 
-        private static bool ValidateDataAnnotations(SaleTransaction saleTransaction)
+        public static bool ValidateDataAnnotations(SaleTransaction saleTransaction)
         {
             ValidationContext context = new ValidationContext(saleTransaction, serviceProvider: null, items: null);
             List<ValidationResult>? results = new List<ValidationResult>();

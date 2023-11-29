@@ -98,7 +98,7 @@ namespace ClientGetHttp.DatabaseServices.Services
             return return_Data;
         }
 
-        private static bool ValidateDataAnnotations(Feedback feedback)
+        public static bool ValidateDataAnnotations(Feedback feedback)
         {
             ValidationContext context = new ValidationContext(feedback, serviceProvider: null, items: null);
             List<ValidationResult>? results = new List<ValidationResult>();

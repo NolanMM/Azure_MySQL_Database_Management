@@ -103,7 +103,7 @@ namespace ClientGetHttp.DatabaseServices.Services
             return return_Data;
         }
 
-        private static bool ValidateDataAnnotations(UserView userView)
+        public static bool ValidateDataAnnotations(UserView userView)
         {
             ValidationContext context = new ValidationContext(userView, serviceProvider: null, items: null);
             List<ValidationResult>? results = new List<ValidationResult>();

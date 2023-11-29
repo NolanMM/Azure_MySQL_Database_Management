@@ -40,7 +40,7 @@ namespace ClientGetHttp.DatabaseServices
                     processedData = await databaseServices.GetDataServiceAsync();
                     break;
                 default:
-                    throw new ArgumentException("Invalid table number");
+                    return null;
             }
             return processedData;
         }
