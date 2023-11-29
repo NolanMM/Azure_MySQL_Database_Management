@@ -78,17 +78,24 @@ namespace ClientGetHttp.DatabaseServices
                     if (return_Product_List_Product_Module.TryGetValue(pid, out var productModuleData))
                     {
                         // Check if the sid (UserID) and the date match
-                        if (productModuleData.Item1 == UserID && return_Product_List_Database[pid].Item4 == productModuleData.Item4)
+                        if (return_Product_List_Database[pid].Item4 == productModuleData.Item4)  // Minh note same day
                         {
-                            // Combine data from both sources into the ReturnData dictionary
-                            ReturnData[pid] = (
-                                UserID,
-                                return_Product_List_Product_Module[pid].Item2,
-                                return_Product_List_Database[pid].Item3,
-                                return_Product_List_Database[pid].Item4,
-                                return_Product_List_Product_Module[pid].Item3,
-                                return_Product_List_Database[pid].Item4
-                            );
+                        // Combine data from both sources into the ReturnData dictionary
+                        return_Product_List_Database.TryGetValue(pid, out var productModuleDatabase);
+                            int.TryParse(productModuleDatabase.Item2, out int int_TodayView);
+                            if (int_TodayView == 0)
+                            {
+                                int.TryParse(productModuleDatabase.Item3, out int IntTodaySale);
+                                int_TodayView = IntTodaySale;
+                            }
+                        ReturnData[pid] = (                     // ProductID
+                            productModuleData.Item1,            // UserSeller
+                            productModuleData.Item2,            // Name of product
+                            productModuleDatabase.Item3,        // TodaySale
+                            int_TodayView.ToString(),           // TodayViews
+                            productModuleData.Item3,            // ProducPrices
+                            productModuleDatabase.Item4         // Date
+                        );
                         }
                     }
                 }

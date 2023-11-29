@@ -10,6 +10,7 @@ namespace ClientGetHttp.DatabaseServices
             Console.WriteLine("1. Fetch data for a specific table");
             Console.WriteLine("2. Test ProcessDataForGetTableCorrespondingUserID function");
             Console.WriteLine("3. Test Product_Group_Database_Services.GetDataServiceAsync function");
+            Console.WriteLine("4. Test Product_Group_Database_Services.GetDataServiceAsync function");
 
             if (int.TryParse(Console.ReadLine(), out int option))
             {
@@ -92,6 +93,43 @@ namespace ClientGetHttp.DatabaseServices
                     else
                     {
                         Console.WriteLine("No data returned from the service.");
+                    }
+                }
+                else if (option == 4)
+                {
+                    Console.WriteLine("Enter the UserID for testing ProcessDataForGetTableCorrespondingUserID function: ");
+                    string? userID = Console.ReadLine();
+
+                    Dictionary<string, (string, string, string, string, string, string)>? result = await Database_Centre.ProcessDataForGetTableCorrespondingUserID(userID);
+
+                    if (result != null && result.Count() != 0)
+                    {
+                        Console.WriteLine("Results of ProcessDataForGetTableCorrespondingUserID function:");
+
+                        int productIdMaxLength = result.Keys.Max(k => k.Length);
+                        int userViewNumberMaxLength = result.Values.Max(v => v.Item1.Length);
+                        int pageViewNumberMaxLength = result.Values.Max(v => v.Item2.Length);
+                        int totalQuantityMaxLength = result.Values.Max(v => v.Item3.Length);
+                        int priceMaxLength = result.Values.Max(v => v.Item5.Length);
+                        int dateMaxLength = result.Values.Max(v => v.Item6.Length);
+
+                        string header = $"| {"ProductId".PadRight(productIdMaxLength)} | {"UserSeller".PadRight(userViewNumberMaxLength)} | {"Name".PadRight(pageViewNumberMaxLength)} | {"TodaySale".PadRight(totalQuantityMaxLength)} | {"TodayViews".PadRight(priceMaxLength)} | {"ProductPrices".PadRight(dateMaxLength)} | {"Date".PadRight(dateMaxLength)} |";
+                        Console.WriteLine(header);
+
+                        foreach (var entry in result)
+                        {
+
+                            string productIdColumn = entry.Key.PadRight(productIdMaxLength + 2);
+                            string UserID = entry.Value.Item1.PadRight(userViewNumberMaxLength + 3);
+                            string ProductName = entry.Value.Item2.PadRight(userViewNumberMaxLength + 3);
+                            string userViewNumberColumn = entry.Value.Item3.PadRight(9);
+                            string pageViewNumberColumn = entry.Value.Item4.PadRight(10);
+                            string priceColumn = entry.Value.Item5.PadRight(13);
+                            string dateColumn = entry.Value.Item6.PadRight(dateMaxLength);
+
+                            string formattedRow = $"| {productIdColumn} | {UserID} | {ProductName} | {userViewNumberColumn} | {pageViewNumberColumn} | {priceColumn} | {dateColumn} |";
+                            Console.WriteLine(formattedRow);
+                        }
                     }
                 }
                 else
