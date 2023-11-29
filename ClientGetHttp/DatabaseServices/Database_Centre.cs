@@ -56,9 +56,9 @@ namespace ClientGetHttp.DatabaseServices
         }
 
 
-        // Return list Dictionary<string,( string, string, string)              [Product name, Today sales total corresponding to that product id, total view corresponding to that product ID]
+        // Return list Dictionary<string,( string, string, string, string)              [Product name, Today sales total corresponding to that product id, total view corresponding to that product ID]
 
-        private async Task<Dictionary<string,( string, string, string)>?> ProcessDataForGetTableCorrespondingUserID(string UserID)
+        public static async Task<Dictionary<string, (string, string, string, string)>?> ProcessDataForGetTableCorrespondingUserID(string UserID)
         {
             try
             {
@@ -84,11 +84,18 @@ namespace ClientGetHttp.DatabaseServices
                 Process_And_Print_Table_DataAsync(Userview_table_Data);
                 Process_And_Print_Table_DataAsync(pageView_table_Data);
                 Process_And_Print_Table_DataAsync(saleTransaction_table_Data);
-                FeedbackTableService userVieTableService = new FeedbackTableService();
 
-                userVieTableService.ProcessFeedbackList(FeedbackTable);
-                pageViewTableService.ProcessPageViewList(Website_logs_table, UserID);
-                return return_List;
+                Dictionary<string, (string, string)>? return_Data_userView = new Dictionary<string, (string, string)>(); // Product ID, (Count, Date)
+                Dictionary<string, (string, string)>? return_Data_PageView= new Dictionary<string, (string, string)>(); // Product ID, (Count, Date)
+                Dictionary<string, (string, string)>? return_Data_SaleTransactionTable = new Dictionary<string, (string, string)>(); // Product ID, (Total Quantity, Date)
+
+                return_Data_userView = userViewTableService.ProcessUserViewList(Valid_User_Views_Table,UserID);
+                return_Data_PageView = pageViewTableService.ProcessPageViewList(Website_logs_table, UserID);
+                return_Data_SaleTransactionTable = saleTransactionTableService.ProcessSaleTransactionList(SalesTransactionsTable, UserID);
+
+                Dictionary<string, (string, string, string, string)> combinedData = FullOuterJoin(return_Data_userView, return_Data_PageView, return_Data_SaleTransactionTable);
+
+                return combinedData;
 
             }
             catch (Exception e)
@@ -96,7 +103,62 @@ namespace ClientGetHttp.DatabaseServices
                 return null;
             }
         }
-        private bool Process_And_Print_Table_DataAsync(List<Group_1_Record_Abstraction> dataAsList)
+        private static Dictionary<string, (string, string, string, string)> FullOuterJoin(
+                Dictionary<string, (string, string)>? userViewData,
+                Dictionary<string, (string, string)>? pageViewData,
+                Dictionary<string, (string, string)>? saleTransactionData)
+        {
+            userViewData ??= new Dictionary<string, (string, string)>();
+            pageViewData ??= new Dictionary<string, (string, string)>();
+            saleTransactionData ??= new Dictionary<string, (string, string)>();
+
+            // Combine all unique ProductIDs from the three dictionaries
+            HashSet<string> allProductIDs = new HashSet<string>(userViewData.Keys);
+            allProductIDs.UnionWith(pageViewData.Keys);
+            allProductIDs.UnionWith(saleTransactionData.Keys);
+
+            Dictionary<string, (string, string, string, string)> result = new Dictionary<string, (string, string, string, string)>();
+
+            foreach (string productId in allProductIDs)
+            {
+                // Get data from each dictionary, defaulting to ("0", "") if not present
+                string? date_process = null;
+                (string userViewCount, string userViewDate) = userViewData.TryGetValue(productId, out var userViewValue)
+                    ? userViewValue
+                    : ("0", "");
+
+                (string pageViewCount, string pageViewDate) = pageViewData.TryGetValue(productId, out var pageViewValue)
+                    ? pageViewValue
+                    : ("0", "");
+
+                (string totalQuantity, string saleTransactionDate) = saleTransactionData.TryGetValue(productId, out var saleTransactionValue)
+                    ? saleTransactionValue
+                    : ("0", "");
+
+                if (!string.IsNullOrEmpty(userViewDate))
+                {
+                    date_process = userViewDate;
+                }
+                else if (!string.IsNullOrEmpty(pageViewDate))
+                {
+                    date_process = pageViewDate;
+                }
+                else if (!string.IsNullOrEmpty(saleTransactionDate))
+                {
+                    date_process = saleTransactionDate;
+                }
+                else
+                {
+                    date_process = "0";
+                }
+                // Add combined data to the result dictionary
+                result.Add(productId, (userViewCount, pageViewCount, totalQuantity, date_process));
+            }
+
+            return result;
+        }
+
+        private static bool Process_And_Print_Table_DataAsync(List<Group_1_Record_Abstraction> dataAsList)
         {
             try
             {
