@@ -45,35 +45,34 @@ namespace ClientGetHttp.DatabaseServices
                 {
                     Console.WriteLine("Enter the UserID for testing ProcessDataForGetTableCorrespondingUserID function: ");
                     string userID = Console.ReadLine();
-
-                    Dictionary<string, (string, string, string, string)>? result = await Database_Centre.ProcessDataForGetTableCorrespondingUserID_Database(userID);
+                    Dictionary<(string, string), (string, string, string, string)>? result = await Database_Centre.ProcessDataForGetTableCorrespondingUserID_Database(userID);
 
                     if (result != null)
                     {
                         Console.WriteLine("Results of ProcessDataForGetTableCorrespondingUserID function:");
 
-                        int productIdMaxLength = result.Keys.Max(k => k.Length);
+                        int productIdMaxLength = result.Keys.Max(k => k.Item1.Length);
+                        int dateMaxLength = result.Keys.Max(k => k.Item2.Length);
                         int userViewNumberMaxLength = result.Values.Max(v => v.Item1.Length);
                         int pageViewNumberMaxLength = result.Values.Max(v => v.Item2.Length);
                         int totalQuantityMaxLength = result.Values.Max(v => v.Item3.Length);
-                        int dateMaxLength = result.Values.Max(v => v.Item4.Length);
 
-                        string header = $"| {"ProductId".PadRight(productIdMaxLength)} | {"UserViewNumber".PadRight(userViewNumberMaxLength)} | {"PageViewNumber".PadRight(pageViewNumberMaxLength)} | {"TotalQuantity".PadRight(totalQuantityMaxLength)} | {"Date".PadRight(dateMaxLength)} |";
+                        string header = $"| {"ProductId".PadRight(productIdMaxLength)} | {"Date".PadRight(dateMaxLength)} | {"UserViewNumber".PadRight(userViewNumberMaxLength)} | {"PageViewNumber".PadRight(pageViewNumberMaxLength)} | {"TotalQuantity".PadRight(totalQuantityMaxLength)} |";
                         Console.WriteLine(header);
 
                         foreach (var entry in result)
                         {
-                            string productIdColumn = entry.Key.PadRight(productIdMaxLength);
+                            string productIdColumn = entry.Key.Item1.PadRight(productIdMaxLength);
+                            string dateColumn = entry.Key.Item2.PadRight(dateMaxLength);
                             string userViewNumberColumn = entry.Value.Item1.PadRight(userViewNumberMaxLength + 13);
                             string pageViewNumberColumn = entry.Value.Item2.PadRight(pageViewNumberMaxLength + 13);
                             string totalQuantityColumn = entry.Value.Item3.PadRight(totalQuantityMaxLength + 12);
-                            string dateColumn = entry.Value.Item4.PadRight(dateMaxLength);
 
-                            string formattedRow = $"| {productIdColumn} | {userViewNumberColumn} | {pageViewNumberColumn} | {totalQuantityColumn} | {dateColumn} |";
+                            string formattedRow = $"| {productIdColumn} | {dateColumn} | {userViewNumberColumn} | {pageViewNumberColumn} | {totalQuantityColumn} | {dateColumn} |";
                             Console.WriteLine(formattedRow);
                         }
                     }
-                    
+
                 }
                 else if (option == 3)
                 {
@@ -100,36 +99,34 @@ namespace ClientGetHttp.DatabaseServices
                     Console.WriteLine("Enter the UserID for testing ProcessDataForGetTableCorrespondingUserID function: ");
                     string? userID = Console.ReadLine();
 
-                    Dictionary<string, (string, string, string, string, string, string)>? result = await Database_Centre.ProcessDataForGetTableCorrespondingUserID(userID);
+                    List<ProductItemData>? result = await Database_Centre.ProcessDataForGetTableCorrespondingUserID(userID);
 
-                    if (result != null && result.Count() != 0)
+                    if (result != null && result.Count != 0)
                     {
                         Console.WriteLine("Results of ProcessDataForGetTableCorrespondingUserID function:");
+                        int userSellerMaxLength = result.Max(r => r.UserSeller.Length);
+                        int productNameMaxLength = result.Max(r => r.ProductName.Length);
+                        int todaySaleMaxLength = result.Max(r => r.TodaySale.Length);
+                        int todayViewsMaxLength = result.Max(r => r.TodayViews.Length);
+                        int productPricesMaxLength = result.Max(r => r.ProductPrices.Length);
+                        int dateMaxLength = result.Max(r => r.Date.Length);
 
-                        int productIdMaxLength = result.Keys.Max(k => k.Length);
-                        int userViewNumberMaxLength = result.Values.Max(v => v.Item1.Length);
-                        int pageViewNumberMaxLength = result.Values.Max(v => v.Item2.Length);
-                        int totalQuantityMaxLength = result.Values.Max(v => v.Item3.Length);
-                        int priceMaxLength = result.Values.Max(v => v.Item5.Length);
-                        int dateMaxLength = result.Values.Max(v => v.Item6.Length);
-
-                        string header = $"| {"ProductId".PadRight(productIdMaxLength)} | {"UserSeller".PadRight(userViewNumberMaxLength)} | {"Name".PadRight(pageViewNumberMaxLength)} | {"TodaySale".PadRight(totalQuantityMaxLength)} | {"TodayViews".PadRight(priceMaxLength)} | {"ProductPrices".PadRight(dateMaxLength)} | {"Date".PadRight(dateMaxLength)} |";
+                        string header = $"| {"UserSeller".PadRight(userSellerMaxLength)} | {"ProductName".PadRight(productNameMaxLength)} | {"TodaySale".PadRight(todaySaleMaxLength)} | {"TodayViews".PadRight(todayViewsMaxLength)} | {"ProductPrices".PadRight(productPricesMaxLength)} | {"Date".PadRight(dateMaxLength)} |";
                         Console.WriteLine(header);
 
                         foreach (var entry in result)
                         {
+                            string userSellerColumn = entry.UserSeller.PadRight(userSellerMaxLength + 3);
+                            string productNameColumn = entry.ProductName.PadRight(productNameMaxLength + 3);
+                            string todaySaleColumn = entry.TodaySale.PadRight(todaySaleMaxLength + 2);
+                            string todayViewsColumn = entry.TodayViews.PadRight(todayViewsMaxLength + 2);
+                            string productPricesColumn = entry.ProductPrices.PadRight(productPricesMaxLength + 2);
+                            string dateColumn = entry.Date.PadRight(dateMaxLength);
 
-                            string productIdColumn = entry.Key.PadRight(productIdMaxLength + 2);
-                            string UserID = entry.Value.Item1.PadRight(userViewNumberMaxLength + 3);
-                            string ProductName = entry.Value.Item2.PadRight(userViewNumberMaxLength + 3);
-                            string userViewNumberColumn = entry.Value.Item3.PadRight(9);
-                            string pageViewNumberColumn = entry.Value.Item4.PadRight(10);
-                            string priceColumn = entry.Value.Item5.PadRight(13);
-                            string dateColumn = entry.Value.Item6.PadRight(dateMaxLength);
-
-                            string formattedRow = $"| {productIdColumn} | {UserID} | {ProductName} | {userViewNumberColumn} | {pageViewNumberColumn} | {priceColumn} | {dateColumn} |";
+                            string formattedRow = $"| {userSellerColumn} | {productNameColumn} | {todaySaleColumn} | {todayViewsColumn} | {productPricesColumn} | {dateColumn} |";
                             Console.WriteLine(formattedRow);
                         }
+
                     }
                 }
                 else
