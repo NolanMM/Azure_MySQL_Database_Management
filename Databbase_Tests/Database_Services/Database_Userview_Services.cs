@@ -49,7 +49,7 @@ namespace Databbase_Tests.Database_Services
 
 
             // Act
-            Dictionary<string, (string, string)>? result = Userview_table_services.ProcessUserViewList(UserView_Lists, UserID);
+            Dictionary<(string, string), string>? result = Userview_table_services.ProcessUserViewList(UserView_Lists, UserID);
 
             // Assert
             Assert.IsNotNull(result);

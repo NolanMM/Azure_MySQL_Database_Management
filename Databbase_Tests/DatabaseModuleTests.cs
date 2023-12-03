@@ -12,7 +12,7 @@ namespace Databbase_Tests
             string UserID = "None";
 
             // Act
-            Dictionary<string, (string, string, string, string)>? result =  await Database_Centre.ProcessDataForGetTableCorrespondingUserID(UserID);
+            List<ProductItemData>? result =  await Database_Centre.ProcessDataForGetTableCorrespondingUserID(UserID);
 
             // Assert
             Assert.IsNotNull(result);

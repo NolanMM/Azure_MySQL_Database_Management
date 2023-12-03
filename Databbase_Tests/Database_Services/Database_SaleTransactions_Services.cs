@@ -41,7 +41,7 @@ namespace Databbase_Tests.Database_Services
             };
 
             // Act
-            Dictionary<string, (string, string)>? result = SaleTransaction_table_services.ProcessSaleTransactionList(SaleTransaction_Lists, UserID);
+            Dictionary<(string, string), string>? result = SaleTransaction_table_services.ProcessSaleTransactionList(SaleTransaction_Lists, UserID);
 
             // Assert
             Assert.IsNotNull(result);
