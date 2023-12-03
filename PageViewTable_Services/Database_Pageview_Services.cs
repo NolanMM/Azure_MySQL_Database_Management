@@ -50,7 +50,7 @@ namespace PageViewTable_Services_Tests
             };
 
             // Act
-            Dictionary<string, (string, string)>? result = Pageview_table_services.ProcessPageViewList(PageView_Lists, UserID);
+            Dictionary<(string, string), string>? result = Pageview_table_services.ProcessPageViewList(PageView_Lists, UserID);
 
             // Assert
             Assert.IsNotNull(result);

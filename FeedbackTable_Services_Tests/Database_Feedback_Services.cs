@@ -48,7 +48,7 @@ namespace FeedbackTable_Services_Tests
             };
 
             // Act
-            Dictionary<string, (string, string)>? result = Feedback_table_Service.ProcessFeedbackList(Feedback_Lists);
+            Dictionary<(string, string), string>? result = Feedback_table_Service.ProcessFeedbackList(Feedback_Lists);
 
             // Assert
             Assert.IsNotNull(result);
